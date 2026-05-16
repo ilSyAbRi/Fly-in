@@ -1,18 +1,20 @@
-
 GREEN=\033[1;38;5;156m
 PURPLE=\033[1;38;5;171m
-YELLOW=\033[1;33m
+BROWN=\033[1;33m
 BLUE=\033[1;34m
 CYAN=\033[1;36m
+GREY=\033[38;5;243m
 RESET=\033[0m
 
 help:
-	@echo "$(PURPLE)━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━$(RESET)"
+	@echo "\n$(PURPLE)━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━$(RESET)"
 	@echo "$(GREEN)        FLY-IN PROJECT HELP$(RESET)"
 	@echo "$(PURPLE)━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━$(RESET)"
-	@echo ""
+	@echo "\n\n"
 
-	@echo "$(YELLOW)make install$(RESET)"
+	
+	@echo "$(GREY)━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━$(RESET)"
+	@echo "$(BROWN)make install$(RESET)"
 	@echo "$(BLUE)WHY:$(RESET)"
 	@echo "  You need a separate safe Python environment for this project."
 	@echo ""
@@ -30,9 +32,12 @@ help:
 	@echo "  - After deleting venv"
 	@echo ""
 	@echo "$(GREEN)✔ Result: clean isolated Python environment$(RESET)"
-	@echo ""
+	@echo "$(GREY)━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━$(RESET)"
 
-	@echo "$(YELLOW)make clean$(RESET)"
+
+	@echo "\n\n\n\n"
+	@echo "$(GREY)━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━$(RESET)"
+	@echo "$(BROWN)make clean$(RESET)"
 	@echo "$(BLUE)WHY:$(RESET)"
 	@echo "  Python creates temporary files that are not needed."
 	@echo ""
@@ -50,9 +55,13 @@ help:
 	@echo "  - When project feels messy or slow"
 	@echo ""
 	@echo "$(GREEN)✔ Result: clean project state$(RESET)"
-	@echo ""
+	@echo "$(GREY)━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━$(RESET)"
 
-	@echo "$(YELLOW)Virtual environment (venv)$(RESET)"
+	@echo "\n\n\n\n"
+	
+	
+	@echo "$(GREY)━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━$(RESET)"
+	@echo "$(BROWN)Virtual environment (venv)$(RESET)"
 	@echo "$(BLUE)WHY:$(RESET)"
 	@echo "  Different projects need different libraries."
 	@echo ""
@@ -66,11 +75,11 @@ help:
 	@echo "$(BLUE)WHEN TO USE:$(RESET)"
 	@echo "  - Activate before working on project"
 	@echo "  - Always use it when coding or testing"
-	@echo ""
+	@echo "$(GREY)━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━$(RESET)"
 
-	@echo "$(PURPLE)━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━$(RESET)"
-	@echo "$(GREEN)TIP:$(RESET) Always run $(YELLOW)make install$(RESET) first"
-	@echo "$(PURPLE)━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━$(RESET)"
+	@echo "\n\n\n\n"
+
+	@echo "$(GREEN)TIP:$(RESET)\nStep 1: Always run $(BROWN)make install$(RESET).\nStep 2: activate the virtual environment (venv)."
 
 clean:
 	@echo "$(PURPLE)Cleaning project...$(RESET)"
