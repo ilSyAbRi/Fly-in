@@ -1,10 +1,10 @@
 
-GREEN=\033[38;5;156m
-CYAN=\033[38;5;171m
+GREEN=\033[1;38;5;156m
+PURPLE=\033[1;38;5;171m
 RESET=\033[0m
 
 clean:
-	@echo "$(CYAN)Cleaning project...$(RESET)"
+	@echo "$(PURPLE)Cleaning project...$(RESET)"
 
 	@# find syntax: find [path] [conditions] [actions]
 	@find . -type d \
