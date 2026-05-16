@@ -1,0 +1,10 @@
+# Python cache
+__pycache__/
+*.pyc
+
+# testing / tooling
+.pytest_cache/
+.mypy_cache/
+
+# virtual environment
+venv/
