@@ -211,7 +211,7 @@ clean:
 lint:
 	@echo "$(CYAN)🧪 Running code quality checks...$(RESET)"
 	@echo "$(GREY)-----------------------------------$(RESET)"
-	flake8 . --exclude=venv,__pycache__,.mypy_cache,.pytest_cache
+	flake8 $(SRC)
 	@echo "$(GREY)-----------------------------------$(RESET)"
 	@echo "$(CYAN)📌 Running mypy type checks...$(RESET)"
 	mypy $(SRC) --warn-return-any --warn-unused-ignores --ignore-missing-imports --disallow-untyped-defs --check-untyped-defs
@@ -239,3 +239,6 @@ install:
 	@venv/bin/pip install flake8 mypy
 
 	@echo "$(GREEN)✔ Environment ready (venv + tools installed)$(RESET)"
+
+
+.PHONY: run clean lint debug install help
