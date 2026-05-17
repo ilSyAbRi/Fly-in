@@ -7,7 +7,7 @@ GREY=\033[38;5;243m
 RESET=\033[0m
 
 MAP ?= maps/easy/01_linear_path.txt
-
+SRC = src
 
 help:
 	@echo "\n$(PURPLE)━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━$(RESET)"
@@ -38,6 +38,7 @@ help:
 	@echo "$(GREY)━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━$(RESET)"
 
 	@echo "\n\n\n\n"
+
 	@echo "$(GREY)━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━$(RESET)"
 	@echo "$(BROWN)make run$(RESET)"
 	@echo "$(BLUE)WHY:$(RESET)"
@@ -63,6 +64,7 @@ help:
 	@echo "$(GREY)━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━$(RESET)"
 
 	@echo "\n\n\n\n"
+
 	@echo "$(GREY)━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━$(RESET)"
 	@echo "$(BROWN)make clean$(RESET)"
 	@echo "$(BLUE)WHY:$(RESET)"
@@ -85,8 +87,70 @@ help:
 	@echo "$(GREY)━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━$(RESET)"
 
 	@echo "\n\n\n\n"
-	
-	
+
+	@echo "$(GREY)━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━$(RESET)"
+	@echo "$(BROWN)make lint$(RESET)"
+	@echo "$(BLUE)WHAT IT DOES:$(RESET)"
+	@echo "  It checks your Python code before running it."
+	@echo ""
+	@echo "$(BLUE)TOOLS USED:$(RESET)"
+	@echo "  - flake8 → checks code style (format, spacing, errors)"
+	@echo "  - mypy   → checks types (int, str, etc.)"
+	@echo ""
+	@echo "$(BLUE)WHY IT IS IMPORTANT:$(RESET)"
+	@echo "  - Finds bugs early"
+	@echo "  - Keeps code clean and readable"
+	@echo "  - Required for project validation"
+	@echo ""
+	@echo "$(BLUE)WHAT HAPPENS WHEN YOU RUN IT:$(RESET)"
+	@echo "  1. flake8 scans all .py files"
+	@echo "  2. mypy checks type safety in src folder"
+	@echo "  3. It prints errors if something is wrong"
+	@echo ""
+	@echo "$(BLUE)HOW TO USE:$(RESET)"
+	@echo "  Run: $(GREEN)make lint$(RESET)"
+	@echo ""
+	@echo "$(BLUE)WHEN TO USE:$(RESET)"
+	@echo "  - Before commit"
+	@echo "  - Before submit"
+	@echo "  - After writing new code"
+	@echo ""
+	@echo "$(GREEN)✔ Result: your code is checked for errors and style issues$(RESET)"
+	@echo "$(GREY)━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━$(RESET)"
+
+	@echo "\n\n\n\n"
+
+	@echo "$(GREY)━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━$(RESET)"
+	@echo "$(BROWN)make debug$(RESET)"
+	@echo "$(BLUE)WHAT IT DOES:$(RESET)"
+	@echo "  Runs your program in debug mode using Python debugger (pdb)."
+	@echo ""
+	@echo "$(BLUE)WHAT IS pdb:$(RESET)"
+	@echo "  It lets you pause your program and check what is happening step by step."
+	@echo ""
+	@echo "$(BLUE)WHY IT IS USEFUL:$(RESET)"
+	@echo "  - Helps find bugs"
+	@echo "  - Shows values of variables"
+	@echo "  - Lets you control execution line by line"
+	@echo ""
+	@echo "$(BLUE)WHAT HAPPENS WHEN YOU RUN IT:$(RESET)"
+	@echo "  1. Program starts with pdb debugger"
+	@echo "  2. Execution stops at first line"
+	@echo "  3. You can step through code manually"
+	@echo ""
+	@echo "$(BLUE)HOW TO USE:$(RESET)"
+	@echo "  make debug"
+	@echo ""
+	@echo "$(BLUE)WHEN TO USE:$(RESET)"
+	@echo "  - When program crashes"
+	@echo "  - When output is wrong"
+	@echo "  - When you want to understand logic step by step"
+	@echo ""
+	@echo "$(GREEN)✔ Result: interactive debugging session starts$(RESET)"
+	@echo "$(GREY)━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━$(RESET)"
+
+	@echo "\n\n\n\n"
+
 	@echo "$(GREY)━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━$(RESET)"
 	@echo "$(BROWN)Virtual environment (venv)$(RESET)"
 	@echo "$(BLUE)WHY:$(RESET)"
@@ -140,10 +204,10 @@ clean:
 lint:
 	@echo "$(CYAN)🧪 Running code quality checks...$(RESET)"
 	@echo "$(GREY)-----------------------------------$(RESET)"
-	flake8 .
+	flake8 . --exclude=venv,__pycache__,.mypy_cache,.pytest_cache
 	@echo "$(GREY)-----------------------------------$(RESET)"
-	@echo "$(BROWN)📌 Running mypy type checks...$(RESET)"
-	mypy . --warn-return-any --warn-unused-ignores --ignore-missing-imports --disallow-untyped-defs --check-untyped-defs
+	@echo "$(CYAN)📌 Running mypy type checks...$(RESET)"
+	mypy $(SRC) --warn-return-any --warn-unused-ignores --ignore-missing-imports --disallow-untyped-defs --check-untyped-defs
 	@echo "$(GREY)-----------------------------------$(RESET)"
 	@echo "$(GREEN)✅ Lint finished$(RESET)"
 
