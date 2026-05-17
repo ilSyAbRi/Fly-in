@@ -6,6 +6,8 @@ CYAN=\033[1;36m
 GREY=\033[38;5;243m
 RESET=\033[0m
 
+MAP ?= maps/easy/01_linear_path.txt
+
 help:
 	@echo "\n$(PURPLE)━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━$(RESET)"
 	@echo "$(GREEN)        FLY-IN PROJECT HELP$(RESET)"
@@ -34,6 +36,30 @@ help:
 	@echo "$(GREEN)✔ Result: clean isolated Python environment$(RESET)"
 	@echo "$(GREY)━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━$(RESET)"
 
+	@echo "\n\n\n\n"
+	@echo "$(GREY)━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━$(RESET)"
+	@echo "$(BROWN)make run$(RESET)"
+	@echo "$(BLUE)WHY:$(RESET)"
+	@echo "  Runs the drone simulation on a selected map file."
+	@echo ""
+	@echo "$(BLUE)WHAT IT DOES:$(RESET)"
+	@echo "  $(CYAN)-$(RESET) Starts the main program (main.py)"
+	@echo "  $(CYAN)-$(RESET) Passes the map file to the parser"
+	@echo "  $(CYAN)-$(RESET) Launches full simulation flow"
+	@echo ""
+	@echo "$(BLUE)HOW TO USE:$(RESET)"
+	@echo "  Run: $(GREEN)make run$(RESET)"
+	@echo "  Or:  $(GREEN)make run MAP=maps/hard/01_maze_nightmare.txt$(RESET)"
+	@echo ""
+	@echo "$(BLUE)DEFAULT BEHAVIOR:$(RESET)"
+	@echo "  Uses: $(CYAN)$(MAP)$(RESET)"
+	@echo ""
+	@echo "$(BLUE)WHEN TO USE:$(RESET)"
+	@echo "  - When testing your project quickly"
+	@echo "  - When switching between maps"
+	@echo ""
+	@echo "$(GREEN)✔ Result: simulation starts and prints drone movements$(RESET)"
+	@echo "$(GREY)━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━$(RESET)"
 
 	@echo "\n\n\n\n"
 	@echo "$(GREY)━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━$(RESET)"
@@ -80,6 +106,14 @@ help:
 	@echo "\n\n\n\n"
 
 	@echo "$(GREEN)TIP:$(RESET)\nStep 1: Always run $(BROWN)make install$(RESET).\nStep 2: activate the virtual environment (venv)."
+
+run:
+	@echo "$(PURPLE)🚀 Starting Fly-in simulation...$(RESET)"
+	@echo "$(CYAN)📄 Map: $(MAP) $(RESET)"
+	@echo "-----------------------------------"
+	@python3 src/main.py $(MAP)
+	@echo "-----------------------------------"
+	@echo "$(GREEN)✅ Simulation finished$(RESET)"
 
 clean:
 	@echo "$(PURPLE)Cleaning project...$(RESET)"
