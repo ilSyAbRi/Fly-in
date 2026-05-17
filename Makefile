@@ -8,6 +8,7 @@ RESET=\033[0m
 
 MAP ?= maps/easy/01_linear_path.txt
 
+
 help:
 	@echo "\n$(PURPLE)━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━$(RESET)"
 	@echo "$(GREEN)        FLY-IN PROJECT HELP$(RESET)"
@@ -107,6 +108,7 @@ help:
 
 	@echo "$(GREEN)TIP:$(RESET)\nStep 1: Always run $(BROWN)make install$(RESET).\nStep 2: activate the virtual environment (venv)."
 
+
 run:
 	@echo "$(PURPLE)🚀 Starting Fly-in simulation...$(RESET)"
 	@echo "$(CYAN)📄 Map: $(MAP) $(RESET)"
@@ -114,6 +116,7 @@ run:
 	@python3 src/main.py $(MAP)
 	@echo "-----------------------------------"
 	@echo "$(GREEN)✅ Simulation finished$(RESET)"
+
 
 clean:
 	@echo "$(PURPLE)Cleaning project...$(RESET)"
@@ -132,6 +135,27 @@ clean:
 		-delete
 
 	@echo "$(GREEN)✔ Clean done: removed pycache, pytest, and mypy caches$(RESET)"
+
+
+lint:
+	@echo "$(CYAN)🧪 Running code quality checks...$(RESET)"
+	@echo "$(GREY)-----------------------------------$(RESET)"
+	flake8 .
+	@echo "$(GREY)-----------------------------------$(RESET)"
+	@echo "$(BROWN)📌 Running mypy type checks...$(RESET)"
+	mypy . --warn-return-any --warn-unused-ignores --ignore-missing-imports --disallow-untyped-defs --check-untyped-defs
+	@echo "$(GREY)-----------------------------------$(RESET)"
+	@echo "$(GREEN)✅ Lint finished$(RESET)"
+
+
+debug:
+	@echo "$(PURPLE)🐛 Starting debug mode (pdb)...$(RESET)"
+	@echo "$(BLUE)📄 Map: $(MAP)$(RESET)"
+	@echo "$(GREY)-----------------------------------$(RESET)"
+	@python3 -m pdb src/main.py $(MAP)
+	@echo "$(GREY)-----------------------------------$(RESET)"
+	@echo "$(GREEN)✅ Debug session ended$(RESET)"
+
 
 install:
 	@echo "$(PURPLE)Creating virtual environment...$(RESET)"
