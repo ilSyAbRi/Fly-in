@@ -1,7 +1,7 @@
 GREEN=\033[1;38;5;156m
 PURPLE=\033[1;38;5;171m
-BROWN=\033[1;33m
-BLUE=\033[1;34m
+YELLOW=\033[1;38;5;11m
+BLUE=\033[38;5;111m
 CYAN=\033[1;36m
 GREY=\033[38;5;243m
 RESET=\033[0m
@@ -17,7 +17,8 @@ help:
 
 	
 	@echo "$(GREY)━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━$(RESET)"
-	@echo "$(BROWN)make install$(RESET)"
+	@echo "$(YELLOW)            make install$(RESET)"
+	@echo "--------------------"
 	@echo "$(BLUE)WHY:$(RESET)"
 	@echo "  You need a separate safe Python environment for this project."
 	@echo ""
@@ -40,7 +41,8 @@ help:
 	@echo "\n\n\n\n"
 
 	@echo "$(GREY)━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━$(RESET)"
-	@echo "$(BROWN)make run$(RESET)"
+	@echo "$(YELLOW)            make run$(RESET)"
+	@echo "--------------------"
 	@echo "$(BLUE)WHY:$(RESET)"
 	@echo "  Runs the drone simulation on a selected map file."
 	@echo ""
@@ -66,7 +68,8 @@ help:
 	@echo "\n\n\n\n"
 
 	@echo "$(GREY)━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━$(RESET)"
-	@echo "$(BROWN)make clean$(RESET)"
+	@echo "$(YELLOW)            make clean$(RESET)"
+	@echo "--------------------"
 	@echo "$(BLUE)WHY:$(RESET)"
 	@echo "  Python creates temporary files that are not needed."
 	@echo ""
@@ -89,7 +92,8 @@ help:
 	@echo "\n\n\n\n"
 
 	@echo "$(GREY)━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━$(RESET)"
-	@echo "$(BROWN)make lint$(RESET)"
+	@echo "$(YELLOW)              make lint$(RESET)"
+	@echo "--------------------"
 	@echo "$(BLUE)WHAT IT DOES:$(RESET)"
 	@echo "  It checks your Python code before running it."
 	@echo ""
@@ -121,7 +125,8 @@ help:
 	@echo "\n\n\n\n"
 
 	@echo "$(GREY)━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━$(RESET)"
-	@echo "$(BROWN)make debug$(RESET)"
+	@echo "$(YELLOW)              make debug$(RESET)"
+	@echo "--------------------"
 	@echo "$(BLUE)WHAT IT DOES:$(RESET)"
 	@echo "  Runs your program in debug mode using Python debugger (pdb)."
 	@echo ""
@@ -152,7 +157,8 @@ help:
 	@echo "\n\n\n\n"
 
 	@echo "$(GREY)━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━$(RESET)"
-	@echo "$(BROWN)Virtual environment (venv)$(RESET)"
+	@echo "$(YELLOW)              Virtual environment (venv)$(RESET)"
+	@echo "--------------------"
 	@echo "$(BLUE)WHY:$(RESET)"
 	@echo "  Different projects need different libraries."
 	@echo ""
@@ -170,8 +176,9 @@ help:
 
 	@echo "\n\n\n\n"
 
-	@echo "$(GREEN)TIP:$(RESET)\nStep 1: Always run $(BROWN)make install$(RESET).\nStep 2: activate the virtual environment (venv)."
-
+	@echo "$(GREY)YO━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━YO━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━$(YELLOW)YO$(RESET)"
+	@echo "$(GREEN)TIP:$(RESET)\nStep 1: Always run $(YELLOW)make install$(RESET).\nStep 2: activate the virtual environment (venv)."
+	@echo "$(GREY)BY━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━BY━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━$(YELLOW)BY$(RESET)"
 
 run:
 	@echo "$(PURPLE)🚀 Starting Fly-in simulation...$(RESET)"
