@@ -12,6 +12,11 @@
 
 ---
 
+<\br>
+
+<\br>
+
+
 ## OSError?
 
 - OSError is an exception raised when the operating system fails to perform a system-level operation requested by your program.
@@ -38,8 +43,6 @@ If the OS cannot do it, Python raises OSError or one of its subclasses.
 
 ```
 
--> OSError happens when the OS says:
-“I cannot do what your program requested.”
 
 
 BaseException
@@ -52,6 +55,10 @@ BaseException
         ├── ConnectionError
         └── ...
 ```
+
+-> OSError happens when the OS says:
+“I cannot do what your program requested.”
+
 
 ---
 
