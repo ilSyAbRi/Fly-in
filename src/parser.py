@@ -2,28 +2,31 @@ class PersonalError(Exception):
     pass
 
 
-class clean_lines_helper:
+class LineCleaner:
 
     def __init__(self, lines_to_clean: list[str]) -> None:
-        self.lines = lines_to_clean
+        self.data = lines_to_clean
 
-    def remove_comment(self) -> list[str]:
+    def remove_comments(self) -> "LineCleaner":
         """
         clean lines form comment any comment
         """
-        self.lines = [line.split("#")[0] for line in self.lines]
+        self.data = [line.split("#")[0] for line in self.data]
+        return self
 
-    def clean_lines_spaces(self) -> list[str]:
+    def strip_spaces(self) -> "LineCleaner":
         """
         clean lines from front and up spaces:
         """
-        self.lines: list[str] = [line.strip() for line in self.lines]
+        self.data = [line.strip() for line in self.data]
+        return self
 
-    def empty_lines (self):
+    def remove_empty_lines(self) -> "LineCleaner":
         """
         skip empty lines just to make good structure to work whit
         """
-        self.lines: list[str] = [line for line in self.lines if line]
+        self.data = [line for line in self.data if line]
+        return self
 
 
 class Parser:
@@ -35,22 +38,25 @@ class Parser:
         """
         Load the map file and return cleaned lines.
 
+        Techniques used:
+            Methode chaining
+            Context manager
+
         Returns:
         list[str]: List of non-empty stripped lines from the file.
         """
         try:
             with open(self.file_path, 'r') as file:
-
+                # use Method chaining
                 lines = file.read().splitlines()
 
-                helper = clean_lines_helper(lines)
-                helper.remove_comment()
-                helper.clean_lines_spaces()
-                helper.empty_lines()
-                
-                return helper.lines
+                helper = LineCleaner(lines)
+
+                # object [comments → spaces → empty]
+                helper.remove_comments().strip_spaces().remove_empty_lines()
+
+                # .data to access to the object helper
+                return helper.data
 
         except OSError as e:
             raise PersonalError(f"file error -> OSError: {e}")
-        except Exception as e:
-            raise PersonalError(f"file error -> ExceptionError: {e}")
