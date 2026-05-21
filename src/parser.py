@@ -3,10 +3,10 @@ class PersonalError(Exception):
 
 
 class Parser:
-    def __init__(self, file_path):
+    def __init__(self, file_path: str) -> None:
         self.file_path = file_path
 
-    def load_raw_input(self):
+    def load_raw_input(self) -> list[str]:
         try:
             with open(self.file_path, 'r') as file:
                 # read file object as file and return it as a list of newline
