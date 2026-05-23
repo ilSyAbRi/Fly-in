@@ -1,6 +1,16 @@
-class PersonalError(Exception):
+from rich import print
+
+
+class CustomParserError(Exception):
     pass
 
+
+class StandardParserError(Exception):
+    pass
+
+
+class PersonalError(Exception):
+    pass
 
 class LineCleaner:
 
@@ -34,6 +44,7 @@ class Parser:
     def __init__(self, file_path: str) -> None:
         self.file_path = file_path
 
+
     def load_raw_input(self) -> list[str]:
         """
         Load the map file and return cleaned lines.
@@ -47,11 +58,20 @@ class Parser:
         """
         try:
             with open(self.file_path, 'r') as file:
-                # use Method chaining
-                lines = file.read().splitlines()
+                # read file
+                content = file.read()
 
+                # check if i have empty file
+                if not content.strip():
+                    raise PersonalError(f"Empty File: {self.file_path}")
+
+                # return a list of seperate lines by '\n'
+                lines = content.splitlines()
+
+                # instance
                 helper = LineCleaner(lines)
 
+                # use Method chaining
                 # object [comments → spaces → empty]
                 helper.remove_comments().strip_spaces().remove_empty_lines()
 

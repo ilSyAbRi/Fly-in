@@ -1,8 +1,11 @@
 import sys
-from parser import Parser, PersonalError
-
+from parser import Parser
+from rich.traceback import install
 
 DEFAULT_PATH = "maps/easy/01_linear_path.txt"
+
+
+install()
 
 
 def main() -> None:
@@ -15,6 +18,6 @@ def main() -> None:
 if __name__ == "__main__":
     try:
         main()
-    except PersonalError as e:
+    except BaseException as e:
         print(e)
-        sys.exit(1)
+    # remember to use Exception
