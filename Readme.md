@@ -41,9 +41,6 @@ If the OS cannot do it, Python raises OSError or one of its subclasses.
 > A system-level operation is any operation where your program must ask the operating system to access or manage real computer resources such as files, hardware, memory, processes, or networking.
 
 ```
-
-
-
 BaseException
 └── Exception
     └── OSError
