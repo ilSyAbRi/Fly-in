@@ -1,14 +1,9 @@
 import sys
 from parser import Parser
-from rich.traceback import install
 from rich import print
 
 
-
 DEFAULT_PATH = "maps/easy/01_linear_path.txt"
-
-
-install()
 
 
 def main() -> None:
