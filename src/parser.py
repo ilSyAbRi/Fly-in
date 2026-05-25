@@ -1,6 +1,3 @@
-from rich import print
-
-
 class CustomParserError(Exception):
     pass
 
