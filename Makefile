@@ -27,7 +27,7 @@ help:
 	@echo "  $(CYAN)-$(RESET) Updates pip in that venv (not system pip)"
 	@echo "  $(CYAN)-$(RESET) Installs flake8 (code checker)"
 	@echo "  $(CYAN)-$(RESET) Installs mypy (type checker)"
-	@echo "  $(CYAN)-$(RESET) Installs rich (colored terminal output using Python file)"
+	@echo "  $(CYAN)-$(RESET) Installs rich (improves Python terminal output)"
 	@echo "  $(CYAN)-$(RESET) Keeps everything isolated from system Python"
 	@echo ""
 	@echo "$(BLUE)HOW TO USE:$(RESET)"

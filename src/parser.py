@@ -6,9 +6,6 @@ class StandardParserError(Exception):
     pass
 
 
-class PersonalError(Exception):
-    pass
-
 class LineCleaner:
 
     def __init__(self, lines_to_clean: list[str]) -> None:
@@ -60,7 +57,7 @@ class Parser:
 
                 # check if i have empty file
                 if not content.strip():
-                    raise PersonalError(f"Empty File: {self.file_path}")
+                    raise CustomParserError(f"Empty File: {self.file_path}")
 
                 # return a list of seperate lines by '\n'
                 lines = content.splitlines()
@@ -76,4 +73,4 @@ class Parser:
                 return helper.data
 
         except OSError as e:
-            raise PersonalError(f"file error -> OSError: {e}")
+            raise StandardParserError(f"file error -> OSError: {e}")
