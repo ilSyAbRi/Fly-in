@@ -38,17 +38,18 @@ class Parser:
     def __init__(self, file_path: str) -> None:
         self.file_path = file_path
 
-
-    def load_raw_input(self) -> list[str]:
+    def load_raw_input(self) -> list[tuple]:
         """
-        Load the map file and return cleaned lines.
+        Load the map file and return cleaned indexed lines.
 
         Techniques used:
             Methode chaining
             Context manager
+            Enumerate
+            comprehension
 
         Returns:
-        list[str]: List of non-empty stripped lines from the file.
+        list[tuple]: List of tuples(index, value).
         """
         try:
             with open(self.file_path, 'r') as file:
@@ -60,17 +61,26 @@ class Parser:
                     raise CustomParserError(f"Empty File: {self.file_path}")
 
                 # return a list of seperate lines by '\n'
-                lines = content.splitlines()
+                raw_lines = content.splitlines()
 
-                # instance
-                helper = LineCleaner(lines)
+                # instance [clean ln=line]
+                clean_ln = LineCleaner(raw_lines)
 
                 # use Method chaining
                 # object [comments → spaces → empty]
-                helper.remove_comments().strip_spaces().remove_empty_lines()
+                clean_ln.remove_comments().strip_spaces().remove_empty_lines()
 
-                # .data to access to the object helper
-                return helper.data
+                # get the right indexing for the clean lines
+                # by using raw lines and enumerate
+                # and simple condition
+                index_lines = [
+                        (i, v)
+                        for i, v in enumerate(raw_lines, start=1)
+                        if v in clean_ln.data
+                        ]
+
+                # list of tuple(index,value)
+                return index_lines
 
         except OSError as e:
             raise StandardParserError(f"file error -> OSError: {e}")
