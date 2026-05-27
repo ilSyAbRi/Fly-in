@@ -14,7 +14,13 @@
 
 ---
 
-<br><br><br>
+<br><br><br> 
+
+## what i should start with ?
+
+```.py
+run: make or make help 
+```
 
 ## OSError?
 
