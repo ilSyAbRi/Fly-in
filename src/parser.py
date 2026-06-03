@@ -68,23 +68,6 @@ class Parser:
             Enumerate
             comprehension
 
-        What is the clean lines ?
-        
-        that line pass of this 3 process
-        
-            remove comments
-            strip spaces
-            remove empty lines
-
-        What is raw lines ?
-
-        that need at least one of this process
-            
-            remove comments
-            strip spaces
-            remove empty lines
-
-        Returns:
         list[tuple]: List of tuples(index, value) List=clean lines.
         """
         try:
@@ -105,11 +88,8 @@ class Parser:
                 # use Method chaining
                 # object [comments → spaces] = raw line
                 # still need remove empty lines to be clean lines
-                # we do remove comments and strip spaces
-                # to get the right value in raw lines
-                # that are exactly like clean lines
-                # no additional space there no comment
-                # we keep empty lines to keep the order
+                # we use raw line to compare it with clean line
+                # to get the right place of element
                 raw_ln.remove_comments().strip_spaces()
                 
                 # instance [clean ln=line]
@@ -134,3 +114,4 @@ class Parser:
         # OSError contain all error that my open can come with
         except OSError as e:
             raise StandardParserError(f"file error -> OSError: {e}")
+
