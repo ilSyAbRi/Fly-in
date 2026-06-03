@@ -1,22 +1,20 @@
 class CustomParserError(Exception):
     """
-    class just for custom error
+    class for custom error
     """
     pass
 
 
 class StandardParserError(Exception):
     """
-    class just for standar error
+    class for standar error
     """
     pass
 
 
 class LineCleaner:
     """
-    help class
-    help me clean lines by methodes and give me permession
-    for using chaining
+    helper methodes for parser to clean lines
     """
 
     def __init__(self, lines_to_clean: list[str]) -> None:
@@ -60,58 +58,36 @@ class Parser:
 
     def load_raw_input(self) -> list[tuple]:
         """
-        Load the map file and return cleaned indexed lines.
-
-        Techniques used:
-            Methode chaining
-            Context manager
-            Enumerate
-            comprehension
-
-        list[tuple]: List of tuples(index, value) List=clean lines.
+            Load the map file and preserve original line numbers
+            for parser error reporting.
         """
         try:
             with open(self.file_path, 'r') as file:
-                # read file and store the content
                 content = file.read()
 
-                # check if i have empty file
                 if not content.strip():
                     raise CustomParserError(f"Empty File: {self.file_path}")
 
-                # return a list of seperate lines by '\n'
                 lines = content.splitlines()
-
-                # instance [raw ln=line]
                 raw_ln = LineCleaner(lines)
-
-                # use Method chaining
-                # object [comments → spaces] = raw line
-                # still need remove empty lines to be clean lines
-                # we use raw line to compare it with clean line
-                # to get the right place of element
                 raw_ln.remove_comments().strip_spaces()
-                
-                # instance [clean ln=line]
                 clean_ln = LineCleaner(lines)
-
-                # use Method chaining
-                # object [comments → spaces -> empty lines] = clean lines
                 clean_ln.remove_comments().strip_spaces().remove_empty_lines()
-
-                # get the right indexing for the clean lines
-                # by using raw lines and enumerate
-                # and simple condition
                 index_lines = [
                         (i, v)
                         for i, v in enumerate(raw_ln.data, start=1)
                         if v in clean_ln.data
                         ]
-
-                # list of tuple(index,value)
                 return index_lines
 
-        # OSError contain all error that my open can come with
         except OSError as e:
             raise StandardParserError(f"file error -> OSError: {e}")
+    
+    def parse_nb_drones(self,clean_lines):
+        
+        first_line = clean_lines[0][1]
+        data = first_line.split(":", 1)
 
+        if data[0] not "nb_drones":
+            raise CustomError(f"line number: {clean_lines[0][0]} should be use name :nb_drones")
+    clean_lines = load_raw_input(self.file_path)
