@@ -1,3 +1,6 @@
+from zone import Zone
+from rich import print
+
 class CustomParserError(Exception):
     """
     class for custom error
@@ -82,12 +85,28 @@ class Parser:
 
         except OSError as e:
             raise StandardParserError(f"file error -> OSError: {e}")
-    
-    def parse_nb_drones(self,clean_lines):
-        
-        first_line = clean_lines[0][1]
-        data = first_line.split(":", 1)
 
-        if data[0] not "nb_drones":
-            raise CustomError(f"line number: {clean_lines[0][0]} should be use name :nb_drones")
-    clean_lines = load_raw_input(self.file_path)
+
+    def parse_nb_drones(self, clean_indexed_ln):
+        
+        k,v = clean_indexed_ln[0][1].split(":", 1)
+        
+        if not v:
+            v = 1
+
+        if k != "nb_drones":
+            raise CustomParserError(f"Line: {clean_indexed_ln[0][0]}"
+                                f"\nError: <{clean_indexed_ln[0][1]}> Did you mean: nb_drones")
+        try :
+            val = int(v)
+        except ValueError:
+            raise StandardParserError(f"Line: {clean_indexed_ln[0][0]}"
+                                     f"\nError: <{v}> should be number")
+        return(k,val)
+
+
+    def dispatcher(self):
+        clean_indexed_ln = self.load_raw_input()
+        data = self.parse_nb_drones(clean_indexed_ln)
+        print(clean_indexed_ln)
+        print(data)
