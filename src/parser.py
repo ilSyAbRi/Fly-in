@@ -99,7 +99,8 @@ class Parser:
         k, v = clean_indexed_ln[0][1].split(":", 1)
 
         if not v:
-            v = 1
+            raise CustomParserError(f"Line: {clean_indexed_ln[0][0]}\
+\nError: enter a number in nb_drones")
 
         if k != "nb_drones":
             raise CustomParserError(f"Line: {clean_indexed_ln[0][0]}\
