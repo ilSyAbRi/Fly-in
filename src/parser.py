@@ -1,5 +1,6 @@
-from zone import Zone
+# from zone import Zone
 from rich import print
+
 
 class CustomParserError(Exception):
     """
@@ -86,24 +87,35 @@ class Parser:
         except OSError as e:
             raise StandardParserError(f"file error -> OSError: {e}")
 
-
     def parse_nb_drones(self, clean_indexed_ln):
-        
-        k,v = clean_indexed_ln[0][1].split(":", 1)
-        
+        """
+            just check if nb drones is valid
+        """
+
+        if ":" not in clean_indexed_ln[0][1]:
+            raise CustomParserError(f"Line: {clean_indexed_ln[0][0]}\
+\nError: <{clean_indexed_ln[0][1]}> you forget :")
+
+        k, v = clean_indexed_ln[0][1].split(":", 1)
+
         if not v:
             v = 1
 
         if k != "nb_drones":
-            raise CustomParserError(f"Line: {clean_indexed_ln[0][0]}"
-                                f"\nError: <{clean_indexed_ln[0][1]}> Did you mean: nb_drones")
-        try :
-            val = int(v)
-        except ValueError:
-            raise StandardParserError(f"Line: {clean_indexed_ln[0][0]}"
-                                     f"\nError: <{v}> should be number")
-        return(k,val)
+            raise CustomParserError(f"Line: {clean_indexed_ln[0][0]}\
+\nError: <{clean_indexed_ln[0][1]}> Did you mean: nb_drones")
 
+        try:
+            val = int(v)
+            if val <= 0:
+                raise CustomParserError(f"Line: {clean_indexed_ln[0][0]}\
+\nError: <{v}> should be positive")
+
+        except ValueError:
+            raise StandardParserError(f"Line: {clean_indexed_ln[0][0]}\
+\nError: <{v}> should be number")
+
+        return (k, val)
 
     def dispatcher(self):
         clean_indexed_ln = self.load_raw_input()
