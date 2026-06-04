@@ -98,13 +98,14 @@ class Parser:
 
         k, v = clean_indexed_ln[0][1].split(":", 1)
 
+        key = k.strip() 
+        if key != "nb_drones":
+            raise CustomParserError(f"Line: {clean_indexed_ln[0][0]}\
+\nError: <{clean_indexed_ln[0][1]}> first line would be : nb_drones")
+        
         if not v:
             raise CustomParserError(f"Line: {clean_indexed_ln[0][0]}\
 \nError: enter a number in nb_drones")
-
-        if k != "nb_drones":
-            raise CustomParserError(f"Line: {clean_indexed_ln[0][0]}\
-\nError: <{clean_indexed_ln[0][1]}> Did you mean: nb_drones")
 
         try:
             val = int(v)
@@ -116,7 +117,7 @@ class Parser:
             raise StandardParserError(f"Line: {clean_indexed_ln[0][0]}\
 \nError: <{v}> should be number")
 
-        return (k, val)
+        return (key, val)
 
     def dispatcher(self):
         clean_indexed_ln = self.load_raw_input()
