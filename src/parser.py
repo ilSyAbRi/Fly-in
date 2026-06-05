@@ -87,7 +87,7 @@ class Parser:
         except OSError as e:
             raise StandardParserError(f"file error -> OSError: {e}")
 
-    def parse_nb_drones(self, clean_indexed_ln):
+    def parse_nb_drones(self, clean_indexed_ln: list[tuple]) -> tuple:
         """
             just check if nb drones is valid
         """
@@ -119,7 +119,7 @@ class Parser:
 
         return (key, val)
 
-    def dispatcher(self):
+    def dispatcher(self) -> None:
         clean_indexed_ln = self.load_raw_input()
         data = self.parse_nb_drones(clean_indexed_ln)
         print(clean_indexed_ln)
