@@ -66,3 +66,24 @@ BaseException
 
 ---
 
+## models
+
+### From the subject, what are the main things?
+
+- A zone (hub, start_hub, end_hub)
+- A connection between zones
+- A graph that contains everything
+
+### Next question:
+
+#### Should a Zone know about connections?
+
+My recommendation:
+
+No.
+
+Keep it simple first.
+
+A zone should only describe itself.
+
+The graph will know how zones are connected.
