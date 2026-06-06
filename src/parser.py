@@ -121,20 +121,21 @@ class Parser:
 
         return (k, v)
 
-    def parse_hubs(self, clean_indexed_ln):
-        
-        required_hub = ("hub", "start_hub", "end_hub")
-       
-        hubs = [x for x in clean_indexed_ln if x[1].startswith("hub")]
-        start_hub = [x for x in clean_indexed_ln if x[1].startswith("start_hub")]
-        end_hub = [x for x in clean_indexed_ln if x[1].startswith("end_hub")]
-        
-        if (len(start_hub) == 0):
-            raise CustomParserError("there are no start_hub it should be there")
-        
-        if (len(end_hub) == 0):
-           raise CustomParserError("there are no end_hub it should be there")
-         
+    def parse_hubs(self, data: list[tuple]) -> None:
+
+        start_hub = [x for x in data if x[1].startswith("start_hub")]
+        end_hub = [x for x in data if x[1].startswith("end_hub")]
+
+        if len(start_hub) == 0:
+            raise CustomParserError("there are no start_hub it should be")
+        elif len(start_hub) > 1:
+            raise CustomParserError("it should be only one start hub")
+
+        if len(end_hub) == 0:
+            raise CustomParserError("there are no end_hub it should be")
+        elif len(end_hub) > 1:
+            raise CustomParserError("it should be on one end hub")
+
     def dispatcher(self) -> None:
         clean_indexed_ln = self.load_raw_input()
         nb_drones_data = self.parse_nb_drones(clean_indexed_ln)
