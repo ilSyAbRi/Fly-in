@@ -98,11 +98,14 @@ class Parser:
 \nError: <{clean_indexed_ln[0][1]}> you forget :")
 
         k, v = clean_indexed_ln[0][1].split(":", 1)
-
+        # strip remove : so to return it to the right place i do that
+        # to check : in nb_drones if they are a space before it or not
+        k = k + ":"
         k = k.strip()
-        if k != "nb_drones":
+        if k != "nb_drones:":
             raise CustomParserError(f"Line: {clean_indexed_ln[0][0]}\
-\nError: <{clean_indexed_ln[0][1]}> first line would be : nb_drones")
+\nError: '{clean_indexed_ln[0][1]}' first line would be 'nb_drones:'\
+ — use exact syntax 'nb_drones:' with no space before ':'")
 
         if not v:
             raise CustomParserError(f"Line: {clean_indexed_ln[0][0]}\
@@ -123,18 +126,29 @@ class Parser:
 
     def parse_hubs(self, data: list[tuple]) -> None:
 
-        start_hub = [x for x in data if x[1].startswith("start_hub")]
-        end_hub = [x for x in data if x[1].startswith("end_hub")]
+        start_hub = [x for x in data if x[1].startswith("start_hub:")]
+        end_hub = [x for x in data if x[1].startswith("end_hub:")]
+
+        print(start_hub)
+        print(end_hub)
 
         if len(start_hub) == 0:
-            raise CustomParserError("there are no start_hub it should be")
+            raise CustomParserError("Error: 'start_hub:' not found\
+ — use exact syntax 'start_hub:' with no space before ':'")
+
         elif len(start_hub) > 1:
-            raise CustomParserError("it should be only one start hub")
+            raise CustomParserError(f"Line: {start_hub[1][0]}\
+\nError: multiple 'start_hub:'\
+ defined — only one 'start_hub:' is allowed")
 
         if len(end_hub) == 0:
-            raise CustomParserError("there are no end_hub it should be")
+            raise CustomParserError("Error: 'end_hub:' not found\
+ — use exact syntax 'end_hub:' with no space before ':'")
+
         elif len(end_hub) > 1:
-            raise CustomParserError("it should be on one end hub")
+            raise CustomParserError(f"Line: {end_hub[1][0]}\
+\nError: multiple 'end_hub:'\
+ defined — only one 'end_hub:' is allowed")
 
     def dispatcher(self) -> None:
         clean_indexed_ln = self.load_raw_input()
