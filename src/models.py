@@ -1,8 +1,10 @@
 class Zone:
+
     def __init__(self, name: str, x: int, y: int,
                  zone_type: str = "normal",
                  color: str = "none",
                  max_drones: int = 1):
+
         self.name = name
         self.x = x
         self.y = y
