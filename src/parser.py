@@ -89,7 +89,8 @@ class Parser:
 
     def parse_nb_drones(self, clean_indexed_ln: list[tuple]) -> tuple:
         """
-            just check if nb drones is valid
+            check nb drones if it s valid
+            return tuple of key value
         """
 
         if ":" not in clean_indexed_ln[0][1]:
@@ -98,8 +99,8 @@ class Parser:
 
         k, v = clean_indexed_ln[0][1].split(":", 1)
 
-        key = k.strip()
-        if key != "nb_drones":
+        k = k.strip()
+        if k != "nb_drones":
             raise CustomParserError(f"Line: {clean_indexed_ln[0][0]}\
 \nError: <{clean_indexed_ln[0][1]}> first line would be : nb_drones")
 
@@ -108,8 +109,9 @@ class Parser:
 \nError: enter a number in nb_drones")
 
         try:
-            val = int(v)
-            if val <= 0:
+            v = v.strip()
+            v = int(v)
+            if v <= 0:
                 raise CustomParserError(f"Line: {clean_indexed_ln[0][0]}\
 \nError: <{v}> should be positive")
 
@@ -117,10 +119,10 @@ class Parser:
             raise StandardParserError(f"Line: {clean_indexed_ln[0][0]}\
 \nError: <{v}> should be number")
 
-        return (key, val)
+        return (k, v)
 
     def dispatcher(self) -> None:
         clean_indexed_ln = self.load_raw_input()
-        data = self.parse_nb_drones(clean_indexed_ln)
+        nb_drones_data = self.parse_nb_drones(clean_indexed_ln)
         print(clean_indexed_ln)
-        print(data)
+        print(nb_drones_data)
