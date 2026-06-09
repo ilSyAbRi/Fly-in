@@ -87,3 +87,38 @@ Keep it simple first.
 A zone should only describe itself.
 
 The graph will know how zones are connected.
+
+
+### the plan i manage to go with it in parsing
+
+#### Phase 1 — Load
+
+- load raw data
+- clean it
+- index it
+
+#### Phase 2 — Extract
+- extract nb_drones
+- extract all hubs
+- extract all connections
+
+#### Phase 3 — Validate
+- validate nb_drones
+- validate hubs
+- validate connections
+- validate relationships between them
+
+#### Phase 4 — Build
+- build graph
+- return it
+
+#### Dispatcher is just the orchestrator — it calls the phases in order, nothing more:
+
+```py
+dispatcher()
+    → data = load()
+    → extracted = extract(data)
+    → validate(extracted)
+    → graph = build(extracted)
+    → return graph
+```

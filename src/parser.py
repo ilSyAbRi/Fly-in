@@ -124,32 +124,6 @@ class Parser:
 
         return (k, v)
 
-    def parse_hubs(self, data: list[tuple]) -> None:
-
-        start_hub = [x for x in data if x[1].startswith("start_hub:")]
-        end_hub = [x for x in data if x[1].startswith("end_hub:")]
-
-        print(start_hub)
-        print(end_hub)
-
-        if len(start_hub) == 0:
-            raise CustomParserError("Error: 'start_hub:' not found\
- — use exact syntax 'start_hub:' with no space before ':'")
-
-        elif len(start_hub) > 1:
-            raise CustomParserError(f"Line: {start_hub[1][0]}\
-\nError: multiple 'start_hub:'\
- defined — only one 'start_hub:' is allowed")
-
-        if len(end_hub) == 0:
-            raise CustomParserError("Error: 'end_hub:' not found\
- — use exact syntax 'end_hub:' with no space before ':'")
-
-        elif len(end_hub) > 1:
-            raise CustomParserError(f"Line: {end_hub[1][0]}\
-\nError: multiple 'end_hub:'\
- defined — only one 'end_hub:' is allowed")
-
     def dispatcher(self) -> None:
         clean_indexed_ln = self.load_raw_input()
         nb_drones_data = self.parse_nb_drones(clean_indexed_ln)
