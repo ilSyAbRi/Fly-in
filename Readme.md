@@ -60,7 +60,7 @@ BaseException
         └── ...
 ```
 
--> OSError happens when the OS says:
+> OSError happens when the OS says:
 “I cannot do what your program requested.”
 
 
@@ -107,11 +107,48 @@ The graph will know how zones are connected.
 - extract all hubs
 - extract all connections
 
+###### parse_nb_drones()
+
+- receive raw line
+- extract the number
+- validate it's an integer
+- validate it's positive
+- return the number
+
+###### parse_single_hub()
+
+- receive raw line
+- extract name
+- extract x, y
+- extract metadata (zone_type, color, max_drones)
+- validate coords are integers
+- validate zone_type is valid
+- validate max_drones is positive
+- return clean hub data
+
+###### parse_single_connection()
+
+- receive raw line
+- extract zone1 and zone2
+- extract max_link_capacity if exists
+- validate format is correct
+- validate max_link_capacity is positive
+- return clean connection data
+
 #### Phase 3 — Validate
+
 - validate nb_drones
 - validate hubs
 - validate connections
 - validate relationships between them
+
+```
+exactly one start_hub?
+exactly one end_hub?
+unique zone names?
+connections link existing zones?
+duplicate connections?
+```
 
 #### Phase 4 — Build
 - build graph
