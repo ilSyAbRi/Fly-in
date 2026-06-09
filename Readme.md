@@ -66,6 +66,9 @@ BaseException
 
 ---
 
+<br>
+<br>
+
 ## models
 
 ### From the subject, what are the main things?
@@ -88,6 +91,8 @@ A zone should only describe itself.
 
 The graph will know how zones are connected.
 
+<br>
+<br>
 
 ### the plan i manage to go with it in parsing
 
@@ -114,10 +119,13 @@ The graph will know how zones are connected.
 
 #### Dispatcher is just the orchestrator — it calls the phases in order, nothing more:
 
+```py
 dispatcher()
-    → data = load()
-    → extracted = extract(data)
-    → validate(extracted)
-    → graph = build(extracted)
-    → return graph
-
+     data = load()
+     extracted = extract(data)
+     validate(extracted)
+     graph = build(extracted)
+     return graph
+```
+<br>
+<br>
