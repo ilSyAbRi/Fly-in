@@ -114,11 +114,10 @@ The graph will know how zones are connected.
 
 #### Dispatcher is just the orchestrator — it calls the phases in order, nothing more:
 
-```py
 dispatcher()
     → data = load()
     → extracted = extract(data)
     → validate(extracted)
     → graph = build(extracted)
     → return graph
-```
+
