@@ -166,3 +166,21 @@ dispatcher()
 ```
 <br>
 <br>
+```
+Phase 1 — Load
+    → read, clean, index
+
+Phase 2 — Extract + local validate
+    → extract each line
+    → validate it AS you extract it
+    → nb_drones, hubs, connections
+
+Phase 3 — Cross validate
+    → unique names
+    → connections link existing zones
+    → no duplicates
+
+Phase 4 — Build
+    → create objects
+    → return graph
+```
