@@ -87,13 +87,26 @@ class Parser:
         except OSError as e:
             raise StandardParserError(f"file error -> OSError: {e}")
 
-    def parse_nb_drones(self, line):
-        pass
+    def parse_nb_drones(self, clean_indexed_lns):
 
+        if ':' not in clean_indexed_lns[0][1]:
+            raise CustomParserError(f"Line : {clean_indexed_lns[0][0]}\
+\nError: '{clean_indexed_lns[0][1]}' syntax should have :")
+        
+        name_nb_drones , nb_drones= clean_indexed_lns[0][1].split(':')
+        name_nb_drones = name_nb_drones.strip()
+        print(name_nb_drones)
+        if name_nb_drones != "nb_drones":
+            raise CustomParserError(f"Line : {clean_indexed_lns[0][0]}\
+\nError: '{clean_indexed_lns[0][1]}' nb_drones should be the first one")
+        
     def validate_extract_data(self,clean_indexed_lns):
+
+        self.parse_nb_drones(clean_indexed_lns)
+
         for index, line in clean_indexed_lns:
             if line.startswith("nb_drones"):
-                self.parse_nb_drones(line)
+                pass
             elif line.startswith("start_hub"):
                 pass
             elif line.startswith("end_hub"):
@@ -103,10 +116,9 @@ class Parser:
             elif line.startswith("connection"):
                 pass
             else :
-                raise CustomParserError(f"Line: {index}\
+                raise CustomParserError(f"line: {index}\
 \nError: '{line}' unknow line")
-
-    
+ 
     def dispatcher(self):
      clean_indexed_lns = self.load_raw_input()
      print(clean_indexed_lns)
