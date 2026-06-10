@@ -4,14 +4,12 @@ class Zone:
                  zone_type: str = "normal",
                  color: str = "none",
                  max_drones: int = 1):
-
         """
             Represent a zone in the drone network.
 
             A zone stores its position, type, color,
             and maximum drone capacity.
         """
-
         self.name = name
         self.x = x
         self.y = y
