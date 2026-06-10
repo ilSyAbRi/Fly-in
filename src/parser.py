@@ -87,46 +87,27 @@ class Parser:
         except OSError as e:
             raise StandardParserError(f"file error -> OSError: {e}")
 
-    def parse_nb_drones(self, clean_indexed_ln: list[tuple]) -> tuple:
-        """
-            check nb drones if it s valid
-            return tuple of key value
-        """
+    def parse_nb_drones(self, line):
+        pass
 
-        if ":" not in clean_indexed_ln[0][1]:
-            raise CustomParserError(f"Line: {clean_indexed_ln[0][0]}\
-\nError: <{clean_indexed_ln[0][1]}> you forget :")
+    def validate_extract_data(self,clean_indexed_lns):
+        for index, line in clean_indexed_lns:
+            if line.startswith("nb_drones"):
+                self.parse_nb_drones(line)
+            elif line.startswith("start_hub"):
+                pass
+            elif line.startswith("end_hub"):
+                pass
+            elif line.startswith("hub"):
+                pass
+            elif line.startswith("connection"):
+                pass
+            else :
+                raise CustomParserError(f"Line: {index}\
+\nError: '{line}' unknow line")
 
-        k, v = clean_indexed_ln[0][1].split(":", 1)
-        # strip remove : so to return it to the right place i do that
-        # to check : in nb_drones if they are a space before it or not
-        k = k + ":"
-        k = k.strip()
-        if k != "nb_drones:":
-            raise CustomParserError(f"Line: {clean_indexed_ln[0][0]}\
-\nError: '{clean_indexed_ln[0][1]}' first line would be 'nb_drones:'\
- — use exact syntax 'nb_drones:' with no space before ':'")
-
-        if not v:
-            raise CustomParserError(f"Line: {clean_indexed_ln[0][0]}\
-\nError: enter a number in nb_drones")
-
-        try:
-            v = v.strip()
-            v = int(v)
-            if v <= 0:
-                raise CustomParserError(f"Line: {clean_indexed_ln[0][0]}\
-\nError: <{v}> should be positive")
-
-        except ValueError:
-            raise StandardParserError(f"Line: {clean_indexed_ln[0][0]}\
-\nError: <{v}> should be number")
-
-        return (k, v)
-
-    def dispatcher(self) -> None:
-        clean_indexed_ln = self.load_raw_input()
-        nb_drones_data = self.parse_nb_drones(clean_indexed_ln)
-        self.parse_hubs(clean_indexed_ln)
-        print(clean_indexed_ln)
-        print(nb_drones_data)
+    
+    def dispatcher(self):
+     clean_indexed_lns = self.load_raw_input()
+     print(clean_indexed_lns)
+     self.validate_extract_data(clean_indexed_lns)
