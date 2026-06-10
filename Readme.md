@@ -184,3 +184,51 @@ Phase 4 — Build
     → create objects
     → return graph
 ```
+
+### Slicing Concept
+my_list = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+
+# ── START only ──
+my_list[3:]     # → [3, 4, 5, 6, 7, 8, 9]  from index 3 to end
+my_list[0:]     # → [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]  everything
+my_list[-3:]    # → [7, 8, 9]  last 3 elements
+
+# ── END only ──
+my_list[:3]     # → [0, 1, 2]  from start to index 3
+my_list[:0]     # → []  empty
+my_list[:-3]    # → [0, 1, 2, 3, 4, 5, 6]  everything except last 3
+
+# ── START + END ──
+my_list[2:5]    # → [2, 3, 4]  from index 2 to 5
+my_list[0:3]    # → [0, 1, 2]  from start to index 3
+my_list[-3:-1]  # → [7, 8]  from -3 to -1
+
+# ── STEP only ──
+my_list[::2]    # → [0, 2, 4, 6, 8]  every 2 elements
+my_list[::3]    # → [0, 3, 6, 9]  every 3 elements
+my_list[::-1]   # → [9, 8, 7, 6, 5, 4, 3, 2, 1, 0]  reversed
+
+# ── START + STEP ──
+my_list[2::2]   # → [2, 4, 6, 8]  from index 2, every 2
+my_list[1::3]   # → [1, 4, 7]  from index 1, every 3
+
+# ── END + STEP ──
+my_list[:8:2]   # → [0, 2, 4, 6]  from start to 8, every 2
+my_list[::-2]   # → [9, 7, 5, 3, 1]  reversed every 2
+
+# ── START + END + STEP ──
+my_list[1:8:2]  # → [1, 3, 5, 7]  from 1 to 8, every 2
+my_list[8:1:-1] # → [8, 7, 6, 5, 4, 3, 2]  from 8 to 1 backwards
+my_list[9:0:-2] # → [9, 7, 5, 3, 1]  from 9 to 0, every 2 backwards
+
+# ── SPECIAL ──
+my_list[:]      # → [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]  full copy
+my_list[::-1]   # → [9, 8, 7, 6, 5, 4, 3, 2, 1, 0]  reversed
+my_list[::1]    # → [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]  normal copy
+
+# ── NEGATIVE INDICES ──
+my_list[-1]     # → 9   last element
+my_list[-2]     # → 8   second to last
+my_list[-3:]    # → [7, 8, 9]  last 3
+my_list[:-3]    # → [0, 1, 2, 3, 4, 5, 6]  all except last 3
+
