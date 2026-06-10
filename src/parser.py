@@ -92,14 +92,25 @@ class Parser:
         if ':' not in clean_indexed_lns[0][1]:
             raise CustomParserError(f"Line : {clean_indexed_lns[0][0]}\
 \nError: '{clean_indexed_lns[0][1]}' syntax should have :")
-        
-        name_nb_drones , nb_drones= clean_indexed_lns[0][1].split(':')
-        name_nb_drones = name_nb_drones.strip()
-        print(name_nb_drones)
-        if name_nb_drones != "nb_drones":
-            raise CustomParserError(f"Line : {clean_indexed_lns[0][0]}\
+
+        try :
+
+            name , nb = clean_indexed_lns[0][1].split(':')
+            name = name.strip()
+
+            if name != "nb_drones":
+                raise CustomParserError(f"Line : {clean_indexed_lns[0][0]}\
 \nError: '{clean_indexed_lns[0][1]}' nb_drones should be the first one")
-        
+
+            nb = int(nb)
+            if nb < 1:
+                raise CustomParserError(f"Line : {clean_indexed_lns[0][0]}\
+\nError: '{nb}' should be positive")
+
+        except ValueError:
+            raise StandardParserError(f"Line : {clean_indexed_lns[0][0]}\
+\nError : '{clean_indexed_lns[0][1]}' invalid syntax")
+
     def validate_extract_data(self,clean_indexed_lns):
 
         self.parse_nb_drones(clean_indexed_lns)
