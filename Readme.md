@@ -186,6 +186,15 @@ Phase 4 — Build
 ```
 
 ### Slicing Concept
+
+[start : end : step]
+   ↑       ↑      ↑
+where   where   jump
+begin   stop    size
+
+positive step → left to right
+negative step → right to left
+missing value → use default (0, end, 1)
 my_list = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
 
 # ── START only ──
