@@ -111,27 +111,40 @@ class Parser:
             raise StandardParserError(f"Line: {clean_indexed_lns[0][0]}"
                                       "\nError : '{clean_indexed_lns[0][1]}'"
                                       " invalid syntax")
+        print(clean_indexed_lns)
         return nb
+
+    def parse_start_hub(self,nb_line, line: tuple):
+        try:
+            start_hub, data = line.split(':')
+            name, x, y, metadata = data.strip().split()
+            print(name,x,y,metadata)
+        except ValueError:
+            raise(f"Line: {nb_line}"
+                  "\nError: '{line}'"
+                  " Invalid syntax")
 
     def validate_extract_data(self, clean_indexed_lns: list[tuple]) -> None:
 
-        self.parse_nb_drones(clean_indexed_lns)
+        max_drone = self.parse_nb_drones(clean_indexed_lns)
 
         for index, line in clean_indexed_lns[1:]:
-            if line.startswith("nb_drones"):
-                raise CustomParserError(f"Line: {index}\
-\nError: '{line}' duplicate")
-            elif line.startswith("start_hub"):
+            print(line)
+            if line.startswith("nb_drones:"):
+                raise CustomParserError(f"Line: {index}"
+                                        "\nError: '{line}' duplicate")
+            elif line.startswith("start_hub:"):
+                print(line)
+                self.parse_start_hub(index, line)
+            elif line.startswith("end_hub:"):
                 pass
-            elif line.startswith("end_hub"):
+            elif line.startswith("hub:"):
                 pass
-            elif line.startswith("hub"):
-                pass
-            elif line.startswith("connection"):
+            elif line.startswith("connection:"):
                 pass
             else:
-                raise CustomParserError(f"line: {index}\
-\nError: '{line}' unknow line")
+                raise CustomParserError(f"line: {index}"
+                                        "\nError: '{line}' unknow line")
 
     def dispatcher(self) -> None:
         clean_indexed_lns = self.load_raw_input()
