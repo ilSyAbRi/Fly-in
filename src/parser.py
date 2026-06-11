@@ -92,27 +92,25 @@ class Parser:
         validate nb drones
         """
         if ':' not in clean_indexed_lns[0][1]:
-            raise CustomParserError(f"Line: {clean_indexed_lns[0][0]}\
-\nError: '{clean_indexed_lns[0][1]}' syntax should have :")
-
+            raise CustomParserError(f"Line: {clean_indexed_lns[0][0]}"
+                                    "\nError: '{clean_indexed_lns[0][1]}'"
+                                    " syntax should have :")
         try:
-
             name, nb = clean_indexed_lns[0][1].split(':')
             name = name.strip()
-
             if name != "nb_drones":
-                raise CustomParserError(f"Line: {clean_indexed_lns[0][0]}\
-\nError: '{clean_indexed_lns[0][1]}' nb_drones should be the first one")
-
+                raise CustomParserError(f"Line: {clean_indexed_lns[0][0]}"
+                                        "\nError: '{clean_indexed_lns[0][1]}'"
+                                        "nb_drones should be the first one ")
             nb = int(nb)
             if nb < 1:
-                raise CustomParserError(f"Line: {clean_indexed_lns[0][0]}\
-\nError: '{nb}' should be positive")
-
+                raise CustomParserError(f"Line: {clean_indexed_lns[0][0]}"
+                                        "\nError: '{nb}'"
+                                        "should be positive")
         except ValueError:
-            raise StandardParserError(f"Line: {clean_indexed_lns[0][0]}\
-\nError : '{clean_indexed_lns[0][1]}' invalid syntax")
-
+            raise StandardParserError(f"Line: {clean_indexed_lns[0][0]}"
+                                      "Error : '{clean_indexed_lns[0][1]}'"
+                                      " invalid syntax")
         return nb
 
     def validate_extract_data(self, clean_indexed_lns: list[tuple]) -> None:
