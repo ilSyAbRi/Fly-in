@@ -109,7 +109,7 @@ class Parser:
                                         "should be positive")
         except ValueError:
             raise StandardParserError(f"Line: {clean_indexed_lns[0][0]}"
-                                      "Error : '{clean_indexed_lns[0][1]}'"
+                                      "\nError : '{clean_indexed_lns[0][1]}'"
                                       " invalid syntax")
         return nb
 
