@@ -115,32 +115,28 @@ class Parser:
 
     def parse_hub(self,nb_line, line: tuple):
 
-        try:
-            start_hub, data = line.split(':')
-            parts = data.split(maxsplit=3)
-            name, x, y = parts[:3]
-            metadata = parts[3] if len(parts) == 4 else ""
-            if metadata:
-                if not metadata.startswith('[') or not metadata.endswith(']'):
-                    raise CustomParserError(f"Line: {nb_line}"
-                                            f"\nError: '{line}'"
-                                            " metadata should start"
-                                            " and end with '[]'")
-            x = int(x)
-            y = int(y)
-            for _n, _x, _y in self.duplicate_list:
-                if name == _n or (x == _x and y == _y):
-                    raise CustomParserError(f"Line: {nb_line}"
-                                            f"\nError: '{line}' "
-                                            "duplicate problem"
-                                            " check name x y")
-            # epxlain deference beteween append and extend
-            self.duplicate_list.append((name, x, y))
+        start_hub, data = line.split(':')
+        parts = data.split(maxsplit=3)
+        name, x, y = parts[:3]
+        metadata = parts[3] if len(parts) == 4 else ""
+        if metadata:
+            if not metadata.startswith('[') or not metadata.endswith(']'):
+                raise CustomParserError(f"Line: {nb_line}"
+                                        f"\nError: '{line}'"
+                                        " metadata should start"
+                                        " and end with '[]'")
+            allowed = ["type","color","maxdrone"]
 
-        except ValueError:
-            raise StandardParserError(f"Line: {nb_line}"
-                                      f"\nError: '{line}'"
-                                      " Invalid syntax")
+        x = int(x)
+        y = int(y)
+        for _n, _x, _y in self.duplicate_list:
+            if name == _n or (x == _x and y == _y):
+                raise CustomParserError(f"Line: {nb_line}"
+                                        f"\nError: '{line}' "
+                                        "duplicate problem"
+                                        " check name x y")
+        # epxlain deference beteween append and extend
+        self.duplicate_list.append((name, x, y))
 
     def validate_extract_data(self, clean_indexed_lns: list[tuple]) -> None:
 
