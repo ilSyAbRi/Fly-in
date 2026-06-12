@@ -117,7 +117,15 @@ class Parser:
 
         try:
             start_hub, data = line.split(':')
-            name, x, y, metadata = data.split()
+            parts = data.split(maxsplit=3)
+            name, x, y = parts[:3]
+            metadata = parts[3] if len(parts) == 4 else ""
+            if metadata:
+                if not metadata.startswith('[') or not metadata.endswith(']'):
+                    raise CustomParserError(f"Line: {nb_line}"
+                                            f"\nError: '{line}'"
+                                            " metadata should start"
+                                            " and end with '[]'")
             x = int(x)
             y = int(y)
             for _n, _x, _y in self.duplicate_list:
@@ -131,8 +139,8 @@ class Parser:
 
         except ValueError:
             raise StandardParserError(f"Line: {nb_line}"
-                  f"\nError: '{line}'"
-                  " Invalid syntax")
+                                      f"\nError: '{line}'"
+                                      " Invalid syntax")
 
     def validate_extract_data(self, clean_indexed_lns: list[tuple]) -> None:
 
