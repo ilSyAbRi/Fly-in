@@ -1,6 +1,5 @@
 import sys
 from parser import Parser, StandardParserError, CustomParserError
-from rich import print
 from rich.traceback import install
 
 install()
@@ -22,5 +21,5 @@ if __name__ == "__main__":
     try:
         main()
     except (StandardParserError, CustomParserError) as e:
-        print(f"[bold bright_red]{e}[/bold bright_red]")
+        print(f"\033[31m{e}\033[0m")
     # remember to use Exception

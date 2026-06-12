@@ -1,6 +1,4 @@
 # from zone import Zone
-from rich import print
-
 
 class CustomParserError(Exception):
     """
@@ -93,23 +91,23 @@ class Parser:
         """
         if ':' not in clean_indexed_lns[0][1]:
             raise CustomParserError(f"Line: {clean_indexed_lns[0][0]}"
-                                    "\nError: '{clean_indexed_lns[0][1]}'"
+                                    f"\nError: '{clean_indexed_lns[0][1]}'"
                                     " syntax should have :")
         try:
             name, nb = clean_indexed_lns[0][1].split(':')
             name = name.strip()
             if name != "nb_drones":
                 raise CustomParserError(f"Line: {clean_indexed_lns[0][0]}"
-                                        "\nError: '{clean_indexed_lns[0][1]}'"
+                                        f"\nError: '{clean_indexed_lns[0][1]}'"
                                         "nb_drones should be the first one ")
             nb = int(nb)
             if nb < 1:
                 raise CustomParserError(f"Line: {clean_indexed_lns[0][0]}"
-                                        "\nError: '{nb}'"
+                                        f"\nError: '{nb}'"
                                         "should be positive")
         except ValueError:
             raise StandardParserError(f"Line: {clean_indexed_lns[0][0]}"
-                                      "\nError : '{clean_indexed_lns[0][1]}'"
+                                      f"\nError : '{clean_indexed_lns[0][1]}'"
                                       " invalid syntax")
         print(clean_indexed_lns)
         return nb
@@ -117,11 +115,10 @@ class Parser:
     def parse_start_hub(self,nb_line, line: tuple):
         try:
             start_hub, data = line.split(':')
-            name, x, y, metadata = data.strip().split()
-            print(name,x,y,metadata)
+            name, x, y, metadata = data.split()
         except ValueError:
-            raise(f"Line: {nb_line}"
-                  "\nError: '{line}'"
+            raise StandardParserError(f"Line: {nb_line}"
+                  f"\nError: '{line}'"
                   " Invalid syntax")
 
     def validate_extract_data(self, clean_indexed_lns: list[tuple]) -> None:
@@ -129,12 +126,10 @@ class Parser:
         max_drone = self.parse_nb_drones(clean_indexed_lns)
 
         for index, line in clean_indexed_lns[1:]:
-            print(line)
             if line.startswith("nb_drones:"):
                 raise CustomParserError(f"Line: {index}"
                                         "\nError: '{line}' duplicate")
             elif line.startswith("start_hub:"):
-                print(line)
                 self.parse_start_hub(index, line)
             elif line.startswith("end_hub:"):
                 pass
@@ -144,9 +139,8 @@ class Parser:
                 pass
             else:
                 raise CustomParserError(f"line: {index}"
-                                        "\nError: '{line}' unknow line")
+                                        f"\nError: '{line}' unknow line")
 
     def dispatcher(self) -> None:
         clean_indexed_lns = self.load_raw_input()
-        print(clean_indexed_lns)
         self.validate_extract_data(clean_indexed_lns)
