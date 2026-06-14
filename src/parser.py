@@ -144,7 +144,6 @@ class Parser:
                                     " and end with '[]'")
         metadata = metadata[1:-1]
         parts = metadata.split()
-        print(parts)
         if len(parts) > 3:
             raise CustomParserError(f"Line: {nb_line}"
                                     f"\nError: '{line}'"
@@ -154,7 +153,6 @@ class Parser:
             dup_meta = []
             for data in parts:
                 key, val = data.split("=")
-                print(key, val)
                 # zone
                 if data.startswith("zone="):
                     valid = ["normal", "blocked", "restricted"]
