@@ -24,7 +24,6 @@ class LineCleaner:
         just set lines to clean to self.data to start cleaning
         """
         self.data = lines_to_clean
-        self.duplicate_list = []
 
     def remove_comments(self) -> "LineCleaner":
         """
@@ -58,7 +57,7 @@ class Parser:
         set instance with attribute file_path
         """
         self.file_path = file_path
-        self.duplicate_list = []
+        self.duplicate_list: list[tuple] = []
 
     def load_raw_input(self) -> list[tuple]:
         """
@@ -88,7 +87,7 @@ class Parser:
         except OSError as e:
             raise StandardParserError(f"file error -> OSError: {e}")
 
-    def parse_nb_drones(self, clean_indexed_lns: list[tuple]) -> int:
+    def parse_nb_drones(self, clean_indexed_lns: list[tuple]) -> None:
         """
         validate nb drones
         """
@@ -112,28 +111,32 @@ class Parser:
             raise StandardParserError(f"Line: {clean_indexed_lns[0][0]}"
                                       f"\nError : '{clean_indexed_lns[0][1]}'"
                                       " invalid syntax")
-        return nb
-        
-    def parse_hub(self,nb_line, line, max_drones: tuple):
 
+    def parse_hub(self, nb_line: int, line: str) -> None:
+        """
+        parse each hub
+        """
         start_hub, data = line.split(':')
         parts = data.split(maxsplit=3)
         name, x, y = parts[:3]
         metadata = parts[3] if len(parts) == 4 else ""
         if metadata:
-            self.parse_metadata(metadata, nb_line, line, max_drones)
-          
-        x = int(x)
-        y = int(y)
+            self.parse_metadata(metadata, nb_line, line)
+
+        X = int(x)
+        Y = int(y)
         for _name, _x, _y in self.duplicate_list:
-            if name == _name or (x == _x and y == _y):
+            if name == _name or (X == _x and Y == _y):
                 raise CustomParserError(f"Line: {nb_line}"
                                         f"\nError: '{line}' "
                                         "duplicate problem"
                                         " check name x y")
         self.duplicate_list.append((name, x, y))
 
-    def parse_metadata(self, metadata, nb_line, line, max_drones):
+    def parse_metadata(self, metadata: str, nb_line: int, line: str) -> None:
+        """
+        parse metadata of each zone
+        """
         if not metadata.startswith('[') or not metadata.endswith(']'):
             raise CustomParserError(f"Line: {nb_line}"
                                     f"\nError: '{line}'"
@@ -151,11 +154,11 @@ class Parser:
             dup_meta = []
             for data in parts:
                 key, val = data.split("=")
-                print(key,val)
+                print(key, val)
                 # zone
                 if data.startswith("zone="):
                     valid = ["normal", "blocked", "restricted"]
-                    if not val in valid:
+                    if val not in valid:
                         raise CustomParserError(f"Line: '{nb_line}'"
                                                 f"\nError: '{line}'"
                                                 f" unknown zone")
@@ -165,11 +168,16 @@ class Parser:
                     if val == "":
                         raise CustomParserError(f"Line: '{nb_line}'"
                                                 f"\nError: '{line}'"
-                                                " empty metadta")
+                                                " empty metadata")
                     dup_meta.append("color=")
                 # max drones
                 elif data.startswith("max_drones="):
-                    val = int(val)
+                    value = int(val)
+                    if value < 1:
+                        raise CustomParserError(f"Line: '{nb_line}'"
+                                                f"\nError: '{line}'"
+                                                f" '{val}' should"
+                                                " be more than 1")
                     dup_meta.append("max_drones=")
                 else:
                     raise CustomParserError(f"Line: {nb_line}"
@@ -178,25 +186,27 @@ class Parser:
                 if len(dup_meta) != len(set(dup_meta)):
                     raise CustomParserError(f"Line: {nb_line}"
                                             f"\nError: '{line}'"
-                                            " duplicate problem")  
+                                            " duplicate problem")
         except ValueError:
             raise StandardParserError(f"Line: {nb_line}"
-                                     f"\nError: '{line}'"
-                                     " invalid syntax")
+                                      f"\nError: '{line}'"
+                                      " invalid syntax")
 
     def validate_extract_data(self, clean_indexed_lns: list[tuple]) -> None:
-
-        max_drones = self.parse_nb_drones(clean_indexed_lns)
+        """
+        dispatcher of zones only
+        """
+        self.parse_nb_drones(clean_indexed_lns)
         for index, line in clean_indexed_lns[1:]:
             if line.startswith("nb_drones:"):
                 raise CustomParserError(f"Line: {index}"
                                         f"\nError: '{line}' duplicate")
             elif line.startswith("start_hub:"):
-                self.parse_hub(index, line, max_drones)
+                self.parse_hub(index, line)
             elif line.startswith("end_hub:"):
-                self.parse_hub(index, line, max_drones)
+                self.parse_hub(index, line)
             elif line.startswith("hub:"):
-                self.parse_hub(index, line, max_drones)
+                self.parse_hub(index, line)
             elif line.startswith("connection:"):
                 pass
             else:
@@ -204,5 +214,8 @@ class Parser:
                                         f"\nError: '{line}' unknow line")
 
     def dispatcher(self) -> None:
+        """
+        the main dispatcher
+        """
         clean_indexed_lns = self.load_raw_input()
         self.validate_extract_data(clean_indexed_lns)
