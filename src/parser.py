@@ -114,14 +114,14 @@ class Parser:
                                       " invalid syntax")
         return nb
         
-    def parse_hub(self,nb_line, line: tuple):
+    def parse_hub(self,nb_line, line, max_drones: tuple):
 
         start_hub, data = line.split(':')
         parts = data.split(maxsplit=3)
         name, x, y = parts[:3]
         metadata = parts[3] if len(parts) == 4 else ""
         if metadata:
-            self.parse_metadata(metadata, nb_line, line)
+            self.parse_metadata(metadata, nb_line, line, max_drones)
           
         x = int(x)
         y = int(y)
@@ -133,42 +133,70 @@ class Parser:
                                         " check name x y")
         self.duplicate_list.append((name, x, y))
 
-    def parse_metadata(self, metadata, nb_line, line):
+    def parse_metadata(self, metadata, nb_line, line, max_drones):
         if not metadata.startswith('[') or not metadata.endswith(']'):
             raise CustomParserError(f"Line: {nb_line}"
                                     f"\nError: '{line}'"
                                     " metadata should start"
                                     " and end with '[]'")
-        valid = ("type=", "color=", "maxdrone=")
         metadata = metadata[1:-1]
         parts = metadata.split()
+        print(parts)
         if len(parts) > 3:
             raise CustomParserError(f"Line: {nb_line}"
                                     f"\nError: '{line}'"
                                     " more than 3 argument"
                                     " in metadata")
-        for data in parts:
-            if not data.startswith(valid):
-                raise CustomParserError(f"Line: {nb_line}"
-                                        f"\nError: '{line}' in '{data}'"
-                                        " not valid syntax")
-
+        try:
+            dup_meta = []
+            for data in parts:
+                key, val = data.split("=")
+                print(key,val)
+                # zone
+                if data.startswith("zone="):
+                    valid = ["normal", "blocked", "restricted"]
+                    if not val in valid:
+                        raise CustomParserError(f"Line: '{nb_line}'"
+                                                f"\nError: '{line}'"
+                                                f" unknown zone")
+                    dup_meta.append("zone=")
+                # color
+                elif data.startswith("color="):
+                    if val == "":
+                        raise CustomParserError(f"Line: '{nb_line}'"
+                                                f"\nError: '{line}'"
+                                                " empty metadta")
+                    dup_meta.append("color=")
+                # max drones
+                elif data.startswith("max_drones="):
+                    val = int(val)
+                    dup_meta.append("max_drones=")
+                else:
+                    raise CustomParserError(f"Line: {nb_line}"
+                                            f"\nError: '{line}'"
+                                            " unknown line")
+                if len(dup_meta) != len(set(dup_meta)):
+                    raise CustomParserError(f"Line: {nb_line}"
+                                            f"\nError: '{line}'"
+                                            " duplicate problem")  
+        except ValueError:
+            raise StandardParserError(f"Line: {nb_line}"
+                                     f"\nError: '{line}'"
+                                     " invalid syntax")
 
     def validate_extract_data(self, clean_indexed_lns: list[tuple]) -> None:
 
-        max_drone = self.parse_nb_drones(clean_indexed_lns)
- 
-        # explain slicing
+        max_drones = self.parse_nb_drones(clean_indexed_lns)
         for index, line in clean_indexed_lns[1:]:
             if line.startswith("nb_drones:"):
                 raise CustomParserError(f"Line: {index}"
                                         f"\nError: '{line}' duplicate")
             elif line.startswith("start_hub:"):
-                self.parse_hub(index, line)
+                self.parse_hub(index, line, max_drones)
             elif line.startswith("end_hub:"):
-                self.parse_hub(index, line)
+                self.parse_hub(index, line, max_drones)
             elif line.startswith("hub:"):
-                self.parse_hub(index, line)
+                self.parse_hub(index, line, max_drones)
             elif line.startswith("connection:"):
                 pass
             else:
