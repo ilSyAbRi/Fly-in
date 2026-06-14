@@ -47,6 +47,7 @@ class LineCleaner:
         self.data = [line for line in self.data if line]
         return self
 
+
 class Parser:
     """
     the main parser class
@@ -112,7 +113,7 @@ class Parser:
                                       f"\nError : '{clean_indexed_lns[0][1]}'"
                                       " invalid syntax")
         return nb
-
+        
     def parse_hub(self,nb_line, line: tuple):
 
         start_hub, data = line.split(':')
@@ -120,28 +121,43 @@ class Parser:
         name, x, y = parts[:3]
         metadata = parts[3] if len(parts) == 4 else ""
         if metadata:
-            if not metadata.startswith('[') or not metadata.endswith(']'):
-                raise CustomParserError(f"Line: {nb_line}"
-                                        f"\nError: '{line}'"
-                                        " metadata should start"
-                                        " and end with '[]'")
-            allowed = ["type","color","maxdrone"]
-
+            self.parse_metadata(metadata, nb_line, line)
+          
         x = int(x)
         y = int(y)
-        for _n, _x, _y in self.duplicate_list:
-            if name == _n or (x == _x and y == _y):
+        for _name, _x, _y in self.duplicate_list:
+            if name == _name or (x == _x and y == _y):
                 raise CustomParserError(f"Line: {nb_line}"
                                         f"\nError: '{line}' "
                                         "duplicate problem"
                                         " check name x y")
-        # epxlain deference beteween append and extend
         self.duplicate_list.append((name, x, y))
+
+    def parse_metadata(self, metadata, nb_line, line):
+        if not metadata.startswith('[') or not metadata.endswith(']'):
+            raise CustomParserError(f"Line: {nb_line}"
+                                    f"\nError: '{line}'"
+                                    " metadata should start"
+                                    " and end with '[]'")
+        valid = ("type=", "color=", "maxdrone=")
+        metadata = metadata[1:-1]
+        parts = metadata.split()
+        if len(parts) > 3:
+            raise CustomParserError(f"Line: {nb_line}"
+                                    f"\nError: '{line}'"
+                                    " more than 3 argument"
+                                    " in metadata")
+        for data in parts:
+            if not data.startswith(valid):
+                raise CustomParserError(f"Line: {nb_line}"
+                                        f"\nError: '{line}' in '{data}'"
+                                        " not valid syntax")
+
 
     def validate_extract_data(self, clean_indexed_lns: list[tuple]) -> None:
 
         max_drone = self.parse_nb_drones(clean_indexed_lns)
-        
+ 
         # explain slicing
         for index, line in clean_indexed_lns[1:]:
             if line.startswith("nb_drones:"):
