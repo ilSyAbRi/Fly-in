@@ -1,9 +1,9 @@
 class Zone:
 
     def __init__(self, name: str, x: int, y: int,
-                 zone_type: str = "normal",
-                 color: str = "none",
-                 max_drones: int = 1):
+                 zone_type: str,
+                 color: str,
+                 max_drones: int):
         """
             Represent a zone in the drone network.
 
