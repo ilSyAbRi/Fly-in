@@ -132,8 +132,7 @@ class Parser:
         except ValueError:
             raise StandardParserError(f"Line: {nb_line}"
                                       f"\nError: '{line}'"
-                                      " cordinates should"
-                                      " be number")
+                                      " invalid syntax")
         for _name, _x, _y in self.duplicate_list:
             if name == _name or (X == _x and Y == _y):
                 raise CustomParserError(f"Line: {nb_line}"
@@ -184,8 +183,8 @@ class Parser:
         if nb_drones is not None and value > nb_drones:
             raise CustomParserError(f"Line: '{nb_line}'"
                                     f"\nError: '{line}'"
-                                    f" '{value}' should be'"
-                                    "more or equal nb_drones:")
+                                    f" '{value}' should be"
+                                    " more or equal nb_drones:")
         self.dup_meta.append("max_drones=")
         return value
 
@@ -204,7 +203,6 @@ class Parser:
                                     f"\nError: '{line}'"
                                     " metadata should start"
                                     " and end with '[]'")
-        metadata = metadata.strip()
         parts = metadata[1:-1].split()
         if len(parts) > 3 or  len(parts) == 0:
             raise CustomParserError(f"Line: {nb_line}"
@@ -224,13 +222,13 @@ class Parser:
                 else:
                     raise CustomParserError(f"Line: {nb_line}"
                                             f"\nError: '{line}'"
-                                            " unknown line")
+                                            " unknown metadata")
             if len(self.dup_meta) != len(set(self.dup_meta)):
                 raise CustomParserError(f"Line: {nb_line}"
                                         f"\nError: '{line}'"
                                         " duplicate problem"
                                         " in metadata")
-        except ValueError:
+        except IndexError:
             raise StandardParserError(f"Line: {nb_line}"
                                       f"\nError: '{line}'"
                                       " invalid syntax")
