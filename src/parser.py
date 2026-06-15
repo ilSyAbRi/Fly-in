@@ -228,7 +228,7 @@ class Parser:
                                         f"\nError: '{line}'"
                                         " duplicate problem"
                                         " in metadata")
-        except IndexError:
+        except ValueError:
             raise StandardParserError(f"Line: {nb_line}"
                                       f"\nError: '{line}'"
                                       " invalid syntax")
