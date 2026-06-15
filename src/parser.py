@@ -204,16 +204,16 @@ class Parser:
                                     f"\nError: '{line}'"
                                     " metadata should start"
                                     " and end with '[]'")
-        metadata = metadata[1:-1]
-        parts = metadata.split()
-        if len(parts) > 3 or metadata == "":
+        metadata = metadata.strip()
+        parts = metadata[1:-1].split()
+        if len(parts) > 3 or  len(parts) == 0:
             raise CustomParserError(f"Line: {nb_line}"
                                     f"\nError: '{line}'"
                                     " not valid number"
                                     " of element in metadata")
         try:
-            dup_meta = []
             for data in parts:
+                self.dup_meta = []
                 _, val = data.split("=")
                 if data.startswith("zone="):
                     zone_type = self.zone_type_meta(nb_line, line, val)
@@ -225,11 +225,11 @@ class Parser:
                     raise CustomParserError(f"Line: {nb_line}"
                                             f"\nError: '{line}'"
                                             " unknown line")
-                if len(dup_meta) != len(set(dup_meta)):
-                    raise CustomParserError(f"Line: {nb_line}"
-                                            f"\nError: '{line}'"
-                                            " duplicate problem"
-                                            " in metadata")
+            if len(self.dup_meta) != len(set(self.dup_meta)):
+                raise CustomParserError(f"Line: {nb_line}"
+                                        f"\nError: '{line}'"
+                                        " duplicate problem"
+                                        " in metadata")
         except ValueError:
             raise StandardParserError(f"Line: {nb_line}"
                                       f"\nError: '{line}'"
@@ -246,6 +246,11 @@ class Parser:
             if line.startswith("nb_drones:"):
                 raise CustomParserError(f"Line: {index}"
                                         f"\nError: '{line}' duplicate")
+            elif line.count(":") != 1:
+                raise CustomParserError(f"Line: '{index}'"
+                                        f"\nError: '{line}'"
+                                        " line should contain"
+                                        " only one ':'")
             elif line.startswith("start_hub:"):
                 zone = self.parse_hub(index, line, nb_drones)
                 self.zones.append(zone)
