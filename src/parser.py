@@ -173,7 +173,7 @@ class Parser:
         return val
 
     def max_drones_meta(self, nb_line: int, line: str,
-                        val: str, nb_drones: (int | None)) -> int:
+                        val: str, nb_drones: int | None) -> int:
         """
         validate max_drones metadata
         """
