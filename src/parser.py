@@ -125,6 +125,10 @@ class Parser:
             _, data = line.split(':')
             parts = data.split(maxsplit=3)
             name, x, y = parts[:3]
+            if "-" in name:
+                raise CustomParserError(f"Line: {nb_line}"
+                                        f"\nError: '{line}'"
+                                        " no '-' should be in name")
             metadata = parts[3] if len(parts) == 4 else ""
             zone_type, color, max_drones = self.parse_metadata(
                         metadata, nb_line, line, nb_drones)
