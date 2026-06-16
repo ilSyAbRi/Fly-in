@@ -1,5 +1,6 @@
 from models import Zone
 
+
 class CustomParserError(Exception):
     """
     class for custom error
@@ -59,7 +60,7 @@ class Parser:
         self.file_path = file_path
         self.duplicate_list: list[tuple] = []
         self.dup_meta: list = []
-        self.zones: list[tuple] = []
+        self.zones: list[Zone] = []
 
     def load_raw_input(self) -> list[tuple]:
         """
@@ -103,7 +104,7 @@ class Parser:
             if name != "nb_drones":
                 raise CustomParserError(f"Line: {clean_indexed_lns[0][0]}"
                                         f"\nError: '{clean_indexed_lns[0][1]}'"
-                                        "nb_drones should be the first one ")
+                                        " nb_drones should be the first one ")
             nb = int(nb)
             if nb < 1:
                 raise CustomParserError(f"Line: {clean_indexed_lns[0][0]}"
@@ -115,7 +116,8 @@ class Parser:
                                       " invalid syntax")
         return nb
 
-    def parse_hub(self, nb_line: int, line: str, nb_drones: int) -> None:
+    def parse_hub(self, nb_line: int,
+                  line: str, nb_drones: int | None) -> Zone:
         """
         parse each hub
         """
@@ -142,7 +144,7 @@ class Parser:
         self.duplicate_list.append((name, X, Y))
         return Zone(name, X, Y, zone_type, color, max_drones)
 
-    def zone_type_meta(self, nb_line, line ,val: str):
+    def zone_type_meta(self, nb_line: int, line: str, val: str) -> str:
         """
         validate zone_type metadata
         """
@@ -154,7 +156,7 @@ class Parser:
         self.dup_meta.append("zone=")
         return val
 
-    def color_meta(self, nb_line, line, val: str):
+    def color_meta(self, nb_line: int, line: str, val: str) -> str:
         """
         validate color metadata
         """
@@ -170,7 +172,8 @@ class Parser:
         self.dup_meta.append("color=")
         return val
 
-    def max_drones_meta(self, nb_line, line, val: str, nb_drones: int):
+    def max_drones_meta(self, nb_line: int, line: str,
+                        val: str, nb_drones: (int | None)) -> int:
         """
         validate max_drones metadata
         """
@@ -189,7 +192,7 @@ class Parser:
         return value
 
     def parse_metadata(self, metadata: str, nb_line: int,
-                       line: str, nb_drones: int) -> tuple:
+                       line: str, nb_drones: int | None) -> tuple:
         """
         parse metadata of each zone
         """
@@ -204,21 +207,22 @@ class Parser:
                                     " metadata should start"
                                     " and end with '[]'")
         parts = metadata[1:-1].split()
-        if len(parts) > 3 or  len(parts) == 0:
+        if len(parts) > 3 or len(parts) == 0:
             raise CustomParserError(f"Line: {nb_line}"
                                     f"\nError: '{line}'"
                                     " not valid number"
                                     " of element in metadata")
         try:
+            self.dup_meta = []
             for data in parts:
-                self.dup_meta = []
                 _, val = data.split("=")
                 if data.startswith("zone="):
                     zone_type = self.zone_type_meta(nb_line, line, val)
                 elif data.startswith("color="):
                     color = self.color_meta(nb_line, line, val)
                 elif data.startswith("max_drones="):
-                    max_drones = self.max_drones_meta(nb_line, line, val, nb_drones)
+                    max_drones = self.max_drones_meta(nb_line, line,
+                                                      val, nb_drones)
                 else:
                     raise CustomParserError(f"Line: {nb_line}"
                                             f"\nError: '{line}'"
@@ -239,7 +243,8 @@ class Parser:
         dispatcher of zones only
         """
         nb_drones = self.parse_nb_drones(clean_indexed_lns)
-        count = 0
+        start_hub_count = 0
+        end_hub_count = 0
         for index, line in clean_indexed_lns[1:]:
             if line.startswith("nb_drones:"):
                 raise CustomParserError(f"Line: {index}"
@@ -252,11 +257,11 @@ class Parser:
             elif line.startswith("start_hub:"):
                 zone = self.parse_hub(index, line, nb_drones)
                 self.zones.append(zone)
-                count += 1
+                start_hub_count += 1
             elif line.startswith("end_hub:"):
                 zone = self.parse_hub(index, line, nb_drones)
                 self.zones.append(zone)
-                count += 1
+                end_hub_count += 1
             elif line.startswith("hub:"):
                 zone = self.parse_hub(index, line, None)
                 self.zones.append(zone)
@@ -265,9 +270,11 @@ class Parser:
             else:
                 raise CustomParserError(f"line: {index}"
                                         f"\nError: '{line}' unknow line")
-        if count != 2:
+        if start_hub_count != 1:
             raise CustomParserError("it should be one"
-                                    " start hub and one end hub")
+                                    " start hub")
+        elif end_hub_count != 1:
+            raise CustomParserError("it should be one end hub")
 
     def dispatcher(self) -> None:
         """

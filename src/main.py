@@ -11,9 +11,13 @@ def main() -> None:
 
     file_path = sys.argv[1] if len(sys.argv) > 1 else DEFAULT_PATH
 
-    parser = Parser(file_path)
+    data = Parser(file_path)
 
-    parser.dispatcher()
+    data.dispatcher()
+
+    for zone in data.zones:
+        print(zone.name, zone.x, zone.y,
+              zone.zone_type, zone.color, zone.max_drones)
 
 
 if __name__ == "__main__":
