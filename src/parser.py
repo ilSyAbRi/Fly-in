@@ -288,7 +288,7 @@ class Parser:
                                     " metadata should start"
                                     " and end with '[]'")
         meta_connection_part = meta_connection[1:-1].strip().split()
-        if len(meta_connection_part) > 1:
+        if len(meta_connection_part) != 1:
             raise CustomParserError(f"Line: {nb_line}"
                                     f"\nError: '{line}'"
                                     " no valid number of"

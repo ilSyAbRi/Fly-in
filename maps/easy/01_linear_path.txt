@@ -7,5 +7,5 @@ hub: waypoint2 1   0 [color=green]
 end_hub: goal 3 0    #jldksjgdf
 
 
-connection: waypoint2-waypoint1       [   max_link_capacity=5   ] 
+connection: waypoint2-waypoint1 [max_link_capacity=4] 
 connection: waypoint1-goal
