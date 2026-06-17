@@ -16,3 +16,13 @@ class Zone:
         self.zone_type = zone_type
         self.color = color
         self.max_drones = max_drones
+
+class Connection:
+
+    def __init__(self, A: str, B: str, nb: int):
+        """
+        represent connection
+        """
+        self.A = A
+        self.B = B
+        self.nb = nb

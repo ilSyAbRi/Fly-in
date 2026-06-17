@@ -1,5 +1,4 @@
-from models import Zone
-
+from models import Zone, Connection
 
 class CustomParserError(Exception):
     """
@@ -61,6 +60,7 @@ class Parser:
         self.duplicate_list: list[tuple] = []
         self.dup_meta: list = []
         self.zones: list[Zone] = []
+        self.connections: list[Connection] = []
 
     def load_raw_input(self) -> list[tuple]:
         """
@@ -70,15 +70,12 @@ class Parser:
         try:
             with open(self.file_path, 'r') as file:
                 content = file.read()
-
                 if not content.strip():
                     raise CustomParserError(f"Empty File: {self.file_path}")
-
                 lines = content.splitlines()
                 raw_ln = LineCleaner(lines)
                 raw_ln.remove_comments().strip_spaces()
                 clean_ln = LineCleaner(lines)
-                # explain chaining
                 clean_ln.remove_comments().strip_spaces().remove_empty_lines()
                 index_lines = [
                         (i, v)
@@ -86,7 +83,6 @@ class Parser:
                         if v in clean_ln.data
                         ]
                 return index_lines
-
         except OSError as e:
             raise StandardParserError(f"file error -> OSError: {e}")
 
@@ -132,7 +128,6 @@ class Parser:
             metadata = parts[3] if len(parts) == 4 else ""
             zone_type, color, max_drones = self.parse_metadata(
                         metadata, nb_line, line, nb_drones)
-
             X = int(x)
             Y = int(y)
         except ValueError:
@@ -147,53 +142,6 @@ class Parser:
                                         " check name x y")
         self.duplicate_list.append((name, X, Y))
         return Zone(name, X, Y, zone_type, color, max_drones)
-
-    def zone_type_meta(self, nb_line: int, line: str, val: str) -> str:
-        """
-        validate zone_type metadata
-        """
-        valid = ["normal", "blocked", "restricted"]
-        if val not in valid:
-            raise CustomParserError(f"Line: '{nb_line}'"
-                                    f"\nError: '{line}'"
-                                    f" unknown zone")
-        self.dup_meta.append("zone=")
-        return val
-
-    def color_meta(self, nb_line: int, line: str, val: str) -> str:
-        """
-        validate color metadata
-        """
-        if val == "":
-            raise CustomParserError(f"Line: '{nb_line}'"
-                                    f"\nError: '{line}'"
-                                    " empty metadata")
-        if not val.isalpha():
-            raise CustomParserError(f"Line: '{nb_line}'"
-                                    f"\nError: '{line}'"
-                                    " color should be "
-                                    "only alphabitic")
-        self.dup_meta.append("color=")
-        return val
-
-    def max_drones_meta(self, nb_line: int, line: str,
-                        val: str, nb_drones: int | None) -> int:
-        """
-        validate max_drones metadata
-        """
-        value = int(val)
-        if value < 1:
-            raise CustomParserError(f"Line: '{nb_line}'"
-                                    f"\nError: '{line}'"
-                                    f" '{value}' should"
-                                    " be positive")
-        if nb_drones is not None and value > nb_drones:
-            raise CustomParserError(f"Line: '{nb_line}'"
-                                    f"\nError: '{line}'"
-                                    f" '{value}' should be"
-                                    " more or equal nb_drones:")
-        self.dup_meta.append("max_drones=")
-        return value
 
     def parse_metadata(self, metadata: str, nb_line: int,
                        line: str, nb_drones: int | None) -> tuple:
@@ -242,6 +190,149 @@ class Parser:
                                       " invalid syntax")
         return zone_type, color, max_drones
 
+    def zone_type_meta(self, nb_line: int, line: str, val: str) -> str:
+        """
+        validate zone_type metadata
+        """
+        valid = ["normal", "blocked", "restricted"]
+        if val not in valid:
+            raise CustomParserError(f"Line: '{nb_line}'"
+                                    f"\nError: '{line}'"
+                                    f" unknown zone")
+        self.dup_meta.append("zone=")
+        return val
+
+    def color_meta(self, nb_line: int, line: str, val: str) -> str:
+        """
+        validate color metadata
+        """
+        if val == "":
+            raise CustomParserError(f"Line: '{nb_line}'"
+                                    f"\nError: '{line}'"
+                                    " empty metadata")
+        if not val.isalpha():
+            raise CustomParserError(f"Line: '{nb_line}'"
+                                    f"\nError: '{line}'"
+                                    " color should be "
+                                    "only alphabitic")
+        self.dup_meta.append("color=")
+        return val
+
+    def max_drones_meta(self, nb_line: int, line: str,
+                        val: str, nb_drones: int | None) -> int:
+        """
+        validate max_drones metadata
+        """
+        value = int(val)
+        if value < 1:
+            raise CustomParserError(f"Line: '{nb_line}'"
+                                    f"\nError: '{line}'"
+                                    f" '{value}' should"
+                                    " be positive")
+        if nb_drones is not None and value > nb_drones:
+            raise CustomParserError(f"Line: '{nb_line}'"
+                                    f"\nError: '{line}'"
+                                    f" '{value}' should be"
+                                    " more or equal nb_drones:")
+        self.dup_meta.append("max_drones=")
+        return value
+
+    def parse_connection(self, nb_line: int, line: str) -> Connection:
+        try:
+            _, name = line.split(':')
+            name1, name2_metadata = name.strip().split('-')
+            track_meta_conection = any(c.isspace() for c in name2_metadata)
+            if track_meta_conection:
+                name2, meta_connection = name2_metadata.split(maxsplit=1)
+                max_link_capacity = self.check_meta_connection(
+                    meta_connection, nb_line, line)
+            else:
+                max_link_capacity = 1
+                name2 = name2_metadata
+            found_name1 = False
+            found_name2 = False
+            for zone in self.zones:
+                if name1 == zone.name:
+                    found_name1 = True
+                if name2 == zone.name:
+                    found_name2 = True
+            if found_name1 == False:
+                raise CustomParserError(f"Line: {nb_line}"
+                                        f"\nError: '{line}'"
+                                        " no name like"
+                                        f" '{name1}' define")
+            if found_name2 == False:
+                raise CustomParserError(f"Line: {nb_line}"
+                                        f"\nError: '{line}'"
+                                        " no name like"
+                                        f" '{name2}' define")
+        except ValueError:
+            raise StandardParserError(f"Line: {nb_line}"
+                                     f"\nError: '{line}'"
+                                     " invalid syntax")
+        return Connection(name1, name2, max_link_capacity)
+
+    def check_meta_connection(self, meta_connection: str,
+                             nb_line: int, line: str) -> int:
+        max_link_capacity = 1
+        if not meta_connection.startswith('[') or not meta_connection.endswith(']'):
+            raise CustomParserError(f"Line: {nb_line}"
+                                    f"\nError: '{line}'"
+                                    " metadata should start"
+                                    " and end with '[]'")
+        meta_connection = meta_connection[1:-1].strip().split()
+        if len(meta_connection) > 1:
+            raise CustomParserError(f"Line: {nb_line}"
+                                    f"\nError: '{line}'"
+                                    " no valid number of"
+                                    " element in metadata")
+        meta_connection = meta_connection[0]
+        if not meta_connection.startswith("max_link_capacity="):
+            raise CustomParserError(f"Line: {nb_line}"
+                                    f"\nError: '{line}'"
+                                    " metadata problem"
+                                    " it should be "
+                                    "max_link_capacity=")
+        try:
+            _, val = meta_connection.split('=')
+            val = int(val)
+            if val < 1:
+                raise CustomParserError(f"Line: {nb_line}"
+                                        f"\nError: '{line}'"
+                                        " '{val}' should be positive")
+        except ValueError:
+            raise StandardParserError(f"Line: {nb_line}"
+                                      f"\nError: '{line}'"
+                                      " invalid syntax")
+        return val
+
+
+    def check_count_start_end_hub(self, start_hub_count: int,
+                                  end_hub_count: int, nb_line: int,
+                                  line: str) -> None:
+        """
+        check how many start hub i have and how many end hub
+        i have and raise error depending on that
+        """
+        if start_hub_count == 0:
+            raise CustomParserError("no start hub found:"
+                                    " it should be one"
+                                    " start hub exist")
+        elif end_hub_count == 0:
+            raise CustomParserError("no end hub found: "
+                                    "it should be one"
+                                    " end hub exist")
+        elif start_hub_count > 1:
+            raise CustomParserError(f"Line: {nb_line}"
+                                    f"\nError: '{line}'"
+                                    " duplicate start hub found:"
+                                    " it should be one start hub")
+        elif end_hub_count > 1:
+            raise CustomParserError(f"Line: {nb_line}"
+                                    f"\nError: '{line}'"
+                                    " duplicate end hub found:"
+                                    " it should be one end hub")
+
     def validate_extract_data(self, clean_indexed_lns: list[tuple]) -> None:
         """
         dispatcher of zones only
@@ -262,23 +353,22 @@ class Parser:
                 zone = self.parse_hub(index, line, nb_drones)
                 self.zones.append(zone)
                 start_hub_count += 1
+                self.check_count_start_end_hub(start_hub_count, 1, index, line)
             elif line.startswith("end_hub:"):
                 zone = self.parse_hub(index, line, nb_drones)
                 self.zones.append(zone)
                 end_hub_count += 1
+                self.check_count_start_end_hub(1, end_hub_count, index, line)
             elif line.startswith("hub:"):
                 zone = self.parse_hub(index, line, None)
                 self.zones.append(zone)
             elif line.startswith("connection:"):
-                pass
+                connection = self.parse_connection(index, line)
+                self.connections.append(connection)
             else:
                 raise CustomParserError(f"line: {index}"
                                         f"\nError: '{line}' unknow line")
-        if start_hub_count != 1:
-            raise CustomParserError("it should be one"
-                                    " start hub")
-        elif end_hub_count != 1:
-            raise CustomParserError("it should be one end hub")
+        self.check_count_start_end_hub(start_hub_count, end_hub_count, index, line)
 
     def dispatcher(self) -> None:
         """
