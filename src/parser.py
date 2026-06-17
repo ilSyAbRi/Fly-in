@@ -248,7 +248,7 @@ class Parser:
             track_meta_conection = any(c.isspace() for c in name2_metadata)
             if track_meta_conection:
                 name2, meta_connection = name2_metadata.split(maxsplit=1)
-                max_link_capacity = self.check_meta_connection(
+                max_link_capacity = self.max_link_capacity_meta(
                     meta_connection, nb_line, line)
             else:
                 max_link_capacity = 1
@@ -276,8 +276,8 @@ class Parser:
                                       " invalid syntax")
         return Connection(name1, name2, max_link_capacity)
 
-    def check_meta_connection(self, meta_connection: str,
-                              nb_line: int, line: str) -> int:
+    def max_link_capacity_meta(self, meta_connection: str,
+                               nb_line: int, line: str) -> int:
         """
         check metadata of connection
         """
