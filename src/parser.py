@@ -1,5 +1,6 @@
 from models import Zone, Connection
 
+
 class CustomParserError(Exception):
     """
     class for custom error
@@ -256,37 +257,37 @@ class Parser:
                     found_name1 = True
                 if name2 == zone.name:
                     found_name2 = True
-            if found_name1 == False:
+            if found_name1 is not True:
                 raise CustomParserError(f"Line: {nb_line}"
                                         f"\nError: '{line}'"
                                         " no name like"
                                         f" '{name1}' define")
-            if found_name2 == False:
+            if found_name2 is not True:
                 raise CustomParserError(f"Line: {nb_line}"
                                         f"\nError: '{line}'"
                                         " no name like"
                                         f" '{name2}' define")
         except ValueError:
             raise StandardParserError(f"Line: {nb_line}"
-                                     f"\nError: '{line}'"
-                                     " invalid syntax")
+                                      f"\nError: '{line}'"
+                                      " invalid syntax")
         return Connection(name1, name2, max_link_capacity)
 
     def check_meta_connection(self, meta_connection: str,
-                             nb_line: int, line: str) -> int:
-        max_link_capacity = 1
-        if not meta_connection.startswith('[') or not meta_connection.endswith(']'):
+                              nb_line: int, line: str) -> int:
+        if (not meta_connection.startswith('[')
+                or not meta_connection.endswith(']')):
             raise CustomParserError(f"Line: {nb_line}"
                                     f"\nError: '{line}'"
                                     " metadata should start"
                                     " and end with '[]'")
-        meta_connection = meta_connection[1:-1].strip().split()
-        if len(meta_connection) > 1:
+        meta_connection_part = meta_connection[1:-1].strip().split()
+        if len(meta_connection_part) > 1:
             raise CustomParserError(f"Line: {nb_line}"
                                     f"\nError: '{line}'"
                                     " no valid number of"
                                     " element in metadata")
-        meta_connection = meta_connection[0]
+        meta_connection = meta_connection_part[0]
         if not meta_connection.startswith("max_link_capacity="):
             raise CustomParserError(f"Line: {nb_line}"
                                     f"\nError: '{line}'"
@@ -295,8 +296,8 @@ class Parser:
                                     "max_link_capacity=")
         try:
             _, val = meta_connection.split('=')
-            val = int(val)
-            if val < 1:
+            value = int(val)
+            if value < 1:
                 raise CustomParserError(f"Line: {nb_line}"
                                         f"\nError: '{line}'"
                                         " '{val}' should be positive")
@@ -304,8 +305,7 @@ class Parser:
             raise StandardParserError(f"Line: {nb_line}"
                                       f"\nError: '{line}'"
                                       " invalid syntax")
-        return val
-
+        return value
 
     def check_count_start_end_hub(self, start_hub_count: int,
                                   end_hub_count: int, nb_line: int,
@@ -368,7 +368,8 @@ class Parser:
             else:
                 raise CustomParserError(f"line: {index}"
                                         f"\nError: '{line}' unknow line")
-        self.check_count_start_end_hub(start_hub_count, end_hub_count, index, line)
+        self.check_count_start_end_hub(start_hub_count,
+                                       end_hub_count, index, line)
 
     def dispatcher(self) -> None:
         """

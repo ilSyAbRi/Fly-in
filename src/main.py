@@ -18,6 +18,9 @@ def main() -> None:
     for zone in data.zones:
         print(zone.name, zone.x, zone.y,
               zone.zone_type, zone.color, zone.max_drones)
+    for connection in data.connections:
+        print(connection.name_a, connection.name_b,
+              connection.max_link_capacity)
 
 
 if __name__ == "__main__":

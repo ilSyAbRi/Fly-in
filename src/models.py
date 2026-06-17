@@ -17,12 +17,13 @@ class Zone:
         self.color = color
         self.max_drones = max_drones
 
+
 class Connection:
 
-    def __init__(self, A: str, B: str, nb: int):
+    def __init__(self, name_a: str, name_b: str, max_link_capacity: int):
         """
         represent connection
         """
-        self.A = A
-        self.B = B
-        self.nb = nb
+        self.name_a = name_a
+        self.name_b = name_b
+        self.max_link_capacity = max_link_capacity
