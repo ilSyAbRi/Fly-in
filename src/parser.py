@@ -127,7 +127,7 @@ class Parser:
                                         f"\nError: '{line}'"
                                         " no '-' should be in name")
             metadata = parts[3] if len(parts) == 4 else ""
-            zone_type, color, max_drones = self.parse_metadata(
+            zone_type, color, max_drones = self.parse_meta_zone(
                         metadata, nb_line, line, nb_drones)
             X = int(x)
             Y = int(y)
@@ -144,8 +144,8 @@ class Parser:
         self.duplicate_list.append((name, X, Y))
         return Zone(name, X, Y, zone_type, color, max_drones)
 
-    def parse_metadata(self, metadata: str, nb_line: int,
-                       line: str, nb_drones: int | None) -> tuple:
+    def parse_meta_zone(self, metadata: str, nb_line: int,
+                        line: str, nb_drones: int | None) -> tuple:
         """
         parse metadata of each zone
         """
@@ -239,6 +239,9 @@ class Parser:
         return value
 
     def parse_connection(self, nb_line: int, line: str) -> Connection:
+        """
+        parse connection
+        """
         try:
             _, name = line.split(':')
             name1, name2_metadata = name.strip().split('-')
@@ -275,6 +278,9 @@ class Parser:
 
     def check_meta_connection(self, meta_connection: str,
                               nb_line: int, line: str) -> int:
+        """
+        check metadata of connection
+        """
         if (not meta_connection.startswith('[')
                 or not meta_connection.endswith(']')):
             raise CustomParserError(f"Line: {nb_line}"
