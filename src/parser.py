@@ -306,7 +306,7 @@ class Parser:
             if value < 1:
                 raise CustomParserError(f"Line: {nb_line}"
                                         f"\nError: '{line}'"
-                                        " '{val}' should be positive")
+                                        f" '{val}' should be positive")
         except ValueError:
             raise StandardParserError(f"Line: {nb_line}"
                                       f"\nError: '{line}'"
