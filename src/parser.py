@@ -230,7 +230,7 @@ class Parser:
                                     f"\nError: '{line}'"
                                     f" '{value}' should"
                                     " be positive")
-        if nb_drones is not None and value > nb_drones:
+        if nb_drones is not None and value < nb_drones:
             raise CustomParserError(f"Line: '{nb_line}'"
                                     f"\nError: '{line}'"
                                     f" '{value}' should be"
