@@ -1,11 +1,10 @@
 
 nb_drones:9
 
-start_hub: start 9 3 [  max_drones=10  ]
-hub: waypoint1 0 1 [color=red   max_drones=3]
-hub: waypoint2 1   0 [color=green]
-end_hub: goal 3 0    [max_drones=9]
+start_hub: start 0 0 fdkjsd [  max_drones=10  ]
+hub: waypoint1 4 0 [color=red]
+hub:waypoint2 1   0 [color=green]
+end_hub: goal 3 0  [max_drones=9]
 
-
-connection: waypoint2-waypoint1 [max_link_capacity=0] 
+connection: waypoint2-waypo int1   [max_link_capacity=1] 
 connection: waypoint1-goal
