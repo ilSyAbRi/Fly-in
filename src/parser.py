@@ -343,7 +343,7 @@ class Parser:
         """
         try:
             _, name = line.split(':')
-            name1, name2_metadata = name.strip().split('-')
+            name1, name2_metadata = name.split('-')
             track_meta_conection = any(c.isspace() for c in name2_metadata)
             if track_meta_conection:
                 name2, meta_connection = name2_metadata.split(maxsplit=1)
