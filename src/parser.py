@@ -94,9 +94,12 @@ class Parser:
         if ':' not in clean_indexed_lns[0][1]:
             raise CustomParserError(
                 f"Line: {clean_indexed_lns[0][0]}"
-                f"\nError: '{clean_indexed_lns[0][1]}'"
-                " — 'nb_drones:' requires a colon,"
-                " use exact syntax: 'nb_drones: <positive_integer>'"
+                f"\nError: missing ':' in"
+                f" '{clean_indexed_lns[0][1]}'"
+                "\n — the first line must always be"
+                " 'nb_drones: <number>', the colon ':'"
+                " is required with no space before it,"
+                " example: 'nb_drones: 3'"
             )
         try:
             name, nb = clean_indexed_lns[0][1].split(':')
@@ -105,23 +108,31 @@ class Parser:
                 raise CustomParserError(
                     f"Line: {clean_indexed_lns[0][0]}"
                     f"\nError: '{clean_indexed_lns[0][1]}'"
-                    " — first line must be 'nb_drones: <positive_integer>',"
-                    " no space before ':'"
+                    " is not valid as the first line"
+                    "\n — the very first line of the map file"
+                    " must always define the number of drones"
+                    " using exactly 'nb_drones: <number>',"
+                    " no other keyword is allowed here,"
+                    " example: 'nb_drones: 5'"
                 )
             nb = int(nb)
             if nb < 1:
                 raise CustomParserError(
                     f"Line: {clean_indexed_lns[0][0]}"
-                    f"\nError: '{nb}'"
-                    " — 'nb_drones' value must be"
-                    " a positive integer greater than 0"
+                    f"\nError: '{nb}' is not a valid drone count"
+                    "\n — nb_drones must be a positive integer"
+                    " greater than 0, you need at least one"
+                    " drone to run the simulation,"
+                    " example: 'nb_drones: 3'"
                 )
         except ValueError:
             raise StandardParserError(
                 f"Line: {clean_indexed_lns[0][0]}"
                 f"\nError: '{clean_indexed_lns[0][1]}'"
-                " — 'nb_drones' value must be a valid integer,"
-                " e.g: 'nb_drones: 3'"
+                " has an invalid value for nb_drones"
+                "\n — the value after ':' must be a whole number"
+                " with no letters or symbols,"
+                " example: 'nb_drones: 3'"
             )
         return nb
 
@@ -139,9 +150,12 @@ class Parser:
             if "-" in name:
                 raise CustomParserError(
                     f"Line: {nb_line}"
-                    f"\nError: '{line}'"
-                    " — zone name cannot contain '-',"
-                    " dashes are reserved for connections"
+                    f"\nError: zone name '{name}' in '{line}'"
+                    " contains a '-' which is not allowed"
+                    "\n — zone names cannot contain dashes"
+                    " because dashes are used to separate"
+                    " zone names in connections,"
+                    " rename this zone without using '-'"
                 )
             metadata = parts[3] if len(parts) == 4 else ""
             zone_type, color, max_drones = self.parse_meta_zone(
@@ -149,19 +163,23 @@ class Parser:
         except ValueError:
             raise StandardParserError(
                 f"Line: {nb_line}"
-                f"\nError: '{line}'"
-                " — invalid zone syntax,"
-                " expected: '<type>: <name> <x> <y> [metadata]'"
-                " — coordinates x and y must be valid integers"
+                f"\nError: '{line}' has invalid zone format"
+                "\n — a zone must follow this exact format:"
+                " '<type>: <name> <x> <y>' where name is a"
+                " word without spaces or dashes, x and y are"
+                " whole numbers representing coordinates,"
+                " example: 'hub: myzone 3 4'"
             )
         for _name, _x, _y in self.duplicate_list:
             if name == _name or (X == _x and Y == _y):
                 raise CustomParserError(
                     f"Line: {nb_line}"
-                    f"\nError: '{line}'"
-                    " — duplicate zone:"
-                    " name or coordinates already"
-                    " used by another zone"
+                    f"\nError: '{line}' defines a zone"
+                    " that already exists"
+                    "\n — every zone must have a unique name"
+                    " and unique coordinates, check all"
+                    " previously defined zones for a conflict"
+                    " with this name or these coordinates"
                 )
         self.duplicate_list.append((name, X, Y))
         return Zone(name, X, Y, zone_type, color, max_drones)
@@ -179,17 +197,24 @@ class Parser:
         if not metadata.startswith('[') or not metadata.endswith(']'):
             raise CustomParserError(
                 f"Line: {nb_line}"
-                f"\nError: '{line}'"
-                f" — metadata '{metadata}' must be"
-                " wrapped in brackets, use: '[key=value ...]'"
+                f"\nError: metadata in '{line}'"
+                " is not properly wrapped"
+                "\n — metadata must start with '[' and end with ']'"
+                " with no extra characters outside the brackets,"
+                f" got '{metadata}',"
+                " example: '[color=red zone=normal max_drones=2]'"
             )
         parts = metadata[1:-1].split()
         if len(parts) > 3 or len(parts) == 0:
             raise CustomParserError(
                 f"Line: {nb_line}"
-                f"\nError: '{line}'"
-                " — metadata accepts 1 to 3 tags only:"
-                " zone=, color=, max_drones="
+                f"\nError: metadata in '{line}'"
+                " has an invalid number of tags"
+                "\n — metadata must contain between 1 and 3 tags,"
+                " no more and no less if brackets are present,"
+                " valid tags are 'zone=', 'color=', 'max_drones=',"
+                " each appearing at most once,"
+                " example: '[color=red zone=normal]'"
             )
         try:
             self.dup_meta = []
@@ -205,25 +230,32 @@ class Parser:
                 else:
                     raise CustomParserError(
                         f"Line: {nb_line}"
-                        f"\nError: '{line}'"
-                        " — unknown metadata tag,"
-                        " valid tags are:"
-                        " 'zone=', 'color=', 'max_drones='"
+                        f"\nError: unknown metadata tag '{data}'"
+                        f" in '{line}'"
+                        "\n — only three tags are allowed inside"
+                        " zone metadata: 'zone=<type>',"
+                        " 'color=<word>', 'max_drones=<number>',"
+                        " any other tag is invalid"
+                        " and must be removed"
                     )
             if len(self.dup_meta) != len(set(self.dup_meta)):
                 raise CustomParserError(
                     f"Line: {nb_line}"
-                    f"\nError: '{line}'"
-                    " — duplicate metadata tag found,"
-                    " each tag can only appear once per zone"
+                    f"\nError: a metadata tag appears"
+                    f" more than once in '{line}'"
+                    "\n — each tag can only be used once per zone,"
+                    " check your metadata for repeated"
+                    " 'zone=', 'color=' or 'max_drones=' tags"
+                    " and remove the duplicate"
                 )
         except ValueError:
             raise StandardParserError(
                 f"Line: {nb_line}"
-                f"\nError: '{line}'"
-                " — invalid metadata syntax,"
-                " use: '[key=value key=value]'"
-                " with no spaces around '='"
+                f"\nError: metadata format is invalid in '{line}'"
+                "\n — each tag inside brackets must follow"
+                " the format 'key=value' with no spaces around '=',"
+                " all tags separated by spaces,"
+                " example: '[zone=normal color=red max_drones=2]'"
             )
         return zone_type, color, max_drones
 
@@ -235,10 +267,14 @@ class Parser:
         if val not in valid:
             raise CustomParserError(
                 f"Line: '{nb_line}'"
-                f"\nError: '{line}'"
-                " — unknown zone type,"
-                " valid types are:"
-                " 'normal', 'blocked', 'restricted', 'priority'"
+                f"\nError: '{val}' is not a valid zone type"
+                f" in '{line}'"
+                "\n — the 'zone=' tag only accepts these four values:"
+                " 'normal' for standard zones with 1 turn cost,"
+                " 'blocked' for zones drones cannot enter,"
+                " 'restricted' for zones that cost 2 turns to enter,"
+                " 'priority' for zones preferred by the pathfinding"
+                " algorithm with 1 turn cost"
             )
         self.dup_meta.append("zone=")
         return val
@@ -250,16 +286,22 @@ class Parser:
         if val == "":
             raise CustomParserError(
                 f"Line: '{nb_line}'"
-                f"\nError: '{line}'"
-                " — 'color=' requires a value,"
-                " e.g: 'color=red'"
+                f"\nError: 'color=' has no value in '{line}'"
+                "\n — the color tag requires a single word value"
+                " made of letters only, it is used for visual"
+                " display in the terminal or graphical output,"
+                " example: 'color=red' or 'color=blue'"
             )
         if not val.isalpha():
             raise CustomParserError(
                 f"Line: '{nb_line}'"
-                f"\nError: '{line}'"
-                " — color value must contain only letters,"
-                " e.g: 'color=red', 'color=blue'"
+                f"\nError: '{val}' is not a valid color"
+                f" value in '{line}'"
+                "\n — color must be a single word containing"
+                " only letters with no numbers, spaces,"
+                " or special characters, it is used purely"
+                " for visual display,"
+                " example: 'color=green' or 'color=gray'"
             )
         self.dup_meta.append("color=")
         return val
@@ -273,16 +315,24 @@ class Parser:
         if value < 1:
             raise CustomParserError(
                 f"Line: '{nb_line}'"
-                f"\nError: '{line}'"
-                f" — 'max_drones' must be a positive integer"
-                f" greater than 0, got '{value}'"
+                f"\nError: 'max_drones={value}'"
+                f" is invalid in '{line}'"
+                "\n — max_drones defines how many drones"
+                " can occupy this zone at the same time"
+                " and must be a positive integer greater than 0,"
+                " the default value is 1 if this tag"
+                " is not specified, example: 'max_drones=2'"
             )
         if nb_drones is not None and value < nb_drones:
             raise CustomParserError(
                 f"Line: '{nb_line}'"
-                f"\nError: '{line}'"
-                f" — 'max_drones={value}' cannot exceed"
-                f" total drone count 'nb_drones={nb_drones}'"
+                f"\nError: 'max_drones={value}' in '{line}'"
+                f" cannot be greater than the total number"
+                f" of drones which is 'nb_drones={nb_drones}'"
+                "\n — it makes no sense to allow more drones"
+                " in a zone than the total number of drones"
+                " in the simulation, reduce max_drones"
+                f" to a value between 1 and {nb_drones}"
             )
         self.dup_meta.append("max_drones=")
         return value
@@ -305,16 +355,20 @@ class Parser:
             if any(c.isspace() for c in name1):
                 raise CustomParserError(
                     f"Line: {nb_line}"
-                    f"\nError: '{line}'"
-                    f" — zone name '{name1}' cannot contain spaces,"
-                    " use exact zone name as defined"
+                    f"\nError: zone name '{name1}' in '{line}'"
+                    " contains spaces which are not allowed"
+                    "\n — zone names must be a single word"
+                    " with no spaces, check the zone definitions"
+                    " above and use the exact name as it was defined"
                 )
             elif any(c.isspace() for c in name2):
                 raise CustomParserError(
                     f"Line: {nb_line}"
-                    f"\nError: '{line}'"
-                    f" — zone name '{name2}' cannot contain spaces,"
-                    " use exact zone name as defined"
+                    f"\nError: zone name '{name2}' in '{line}'"
+                    " contains spaces which are not allowed"
+                    "\n — zone names must be a single word"
+                    " with no spaces, check the zone definitions"
+                    " above and use the exact name as it was defined"
                 )
             found_name1 = False
             found_name2 = False
@@ -326,26 +380,36 @@ class Parser:
             if found_name1 is not True:
                 raise CustomParserError(
                     f"Line: {nb_line}"
-                    f"\nError: '{line}'"
-                    f" — zone '{name1}' not found,"
-                    " connection must reference"
-                    " zones defined above it"
+                    f"\nError: zone '{name1}' used in '{line}'"
+                    " was never defined"
+                    "\n — connections can only link zones that"
+                    " have been defined above using 'hub:',"
+                    " 'start_hub:', or 'end_hub:',"
+                    " check your spelling or add the missing"
+                    " zone definition before this line"
                 )
             if found_name2 is not True:
                 raise CustomParserError(
                     f"Line: {nb_line}"
-                    f"\nError: '{line}'"
-                    f" — zone '{name2}' not found,"
-                    " connection must reference"
-                    " zones defined above it"
+                    f"\nError: zone '{name2}' used in '{line}'"
+                    " was never defined"
+                    "\n — connections can only link zones that"
+                    " have been defined above using 'hub:',"
+                    " 'start_hub:', or 'end_hub:',"
+                    " check your spelling or add the missing"
+                    " zone definition before this line"
                 )
         except ValueError:
             raise StandardParserError(
                 f"Line: {nb_line}"
-                f"\nError: '{line}'"
-                " — invalid connection syntax, use:"
-                " 'connection: <zone1>-<zone2>"
-                " [max_link_capacity=N]'"
+                f"\nError: '{line}' has invalid connection format"
+                "\n — a connection must follow this exact format:"
+                " 'connection: <zone1>-<zone2>' where zone1 and"
+                " zone2 are names of previously defined zones"
+                " separated by a single '-', optionally followed"
+                " by '[max_link_capacity=<number>]',"
+                " example: 'connection: start-goal' or"
+                " 'connection: zoneA-zoneB [max_link_capacity=2]'"
             )
         return Connection(name1, name2, max_link_capacity)
 
@@ -358,28 +422,36 @@ class Parser:
                 or not meta_connection.endswith(']')):
             raise CustomParserError(
                 f"Line: {nb_line}"
-                f"\nError: '{line}'"
-                " — connection metadata must be"
-                " wrapped in brackets,"
-                " use: '[max_link_capacity=N]'"
+                f"\nError: connection metadata in '{line}'"
+                " is not properly wrapped"
+                "\n — connection metadata must start with '['"
+                " and end with ']' with no extra characters"
+                f" outside, got '{meta_connection}',"
+                " example: '[max_link_capacity=2]'"
             )
         meta_connection_part = meta_connection[1:-1].strip().split()
         if len(meta_connection_part) != 1:
             raise CustomParserError(
                 f"Line: {nb_line}"
-                f"\nError: '{line}'"
-                " — connection metadata accepts"
-                " exactly one tag:"
-                " 'max_link_capacity=<positive_integer>'"
+                f"\nError: connection metadata in '{line}'"
+                " has too many or too few tags"
+                "\n — connection metadata accepts exactly one tag"
+                " which is 'max_link_capacity=<number>',"
+                " remove any extra content from the brackets,"
+                " example: '[max_link_capacity=2]'"
             )
         meta_connection = meta_connection_part[0]
         if not meta_connection.startswith("max_link_capacity="):
             raise CustomParserError(
                 f"Line: {nb_line}"
-                f"\nError: '{line}'"
-                " — unknown connection metadata,"
-                " only 'max_link_capacity=<positive_integer>'"
-                " is allowed"
+                f"\nError: unknown connection metadata tag"
+                f" in '{line}'"
+                "\n — the only allowed tag in connection metadata"
+                " is 'max_link_capacity=<number>' which defines"
+                " how many drones can use this connection"
+                " at the same time, the default is 1"
+                " if no metadata is provided,"
+                " example: '[max_link_capacity=3]'"
             )
         try:
             _, val = meta_connection.split('=')
@@ -387,18 +459,22 @@ class Parser:
             if value < 1:
                 raise CustomParserError(
                     f"Line: {nb_line}"
-                    f"\nError: '{line}'"
-                    f" — 'max_link_capacity' must be"
-                    f" a positive integer greater than 0,"
-                    f" got '{val}'"
+                    f"\nError: 'max_link_capacity={val}'"
+                    f" in '{line}' is not valid"
+                    "\n — max_link_capacity defines how many drones"
+                    " can travel through this connection"
+                    " at the same time and must be a positive"
+                    " integer greater than 0, the default is 1,"
+                    " example: '[max_link_capacity=2]'"
                 )
         except ValueError:
             raise StandardParserError(
                 f"Line: {nb_line}"
-                f"\nError: '{line}'"
-                " — 'max_link_capacity' value must be"
-                " a valid integer,"
-                " e.g: '[max_link_capacity=2]'"
+                f"\nError: 'max_link_capacity' value in '{line}'"
+                " is not a valid number"
+                "\n — the value after '=' must be a whole positive"
+                " integer with no letters or symbols,"
+                " example: '[max_link_capacity=2]'"
             )
         return value
 
@@ -411,27 +487,38 @@ class Parser:
         """
         if start_hub_count == 0:
             raise CustomParserError(
-                "map must contain exactly one 'start_hub:'"
-                " — none found"
+                "Error: no 'start_hub:' found in this map"
+                "\n — every map must have exactly one starting zone"
+                " defined using 'start_hub: <name> <x> <y>',"
+                " this is where all drones begin the simulation,"
+                " add a start zone to your map file"
             )
         elif end_hub_count == 0:
             raise CustomParserError(
-                "map must contain exactly one 'end_hub:'"
-                " — none found"
+                "Error: no 'end_hub:' found in this map"
+                " — every map must have exactly one ending zone"
+                " defined using 'end_hub: <name> <x> <y>',"
+                " this is the destination all drones must reach"
+                " to complete the simulation,"
+                " add an end zone to your map file"
             )
         elif start_hub_count > 1:
             raise CustomParserError(
                 f"Line: {nb_line}"
-                f"\nError: '{line}'"
-                " — only one 'start_hub:' is allowed"
-                " per map, duplicate found here"
+                f"\nError: second 'start_hub:' found in '{line}'"
+                "\n — a map can only have one starting zone,"
+                " the first 'start_hub:' was already defined"
+                " earlier in the file, remove this duplicate"
+                " or convert it to a regular 'hub:' zone"
             )
         elif end_hub_count > 1:
             raise CustomParserError(
                 f"Line: {nb_line}"
-                f"\nError: '{line}'"
-                " — only one 'end_hub:' is allowed"
-                " per map, duplicate found here"
+                f"\nError: second 'end_hub:' found in '{line}'"
+                "\n — a map can only have one ending zone,"
+                " the first 'end_hub:' was already defined"
+                " earlier in the file, remove this duplicate"
+                " or convert it to a regular 'hub:' zone"
             )
 
     def validate_extract_data(self, clean_indexed_lns: list[tuple]) -> None:
@@ -445,27 +532,33 @@ class Parser:
             if line.startswith("nb_drones:"):
                 raise CustomParserError(
                     f"Line: {index}"
-                    f"\nError: '{line}'"
-                    " — 'nb_drones:' must appear only once"
-                    " as the very first line, duplicate found"
+                    f"\nError: 'nb_drones:' found again in '{line}'"
+                    "\n — 'nb_drones:' must appear only once"
+                    " and must be the very first line"
+                    " of the map file, remove this duplicate line"
                 )
             elif line.count(":") != 1:
                 raise CustomParserError(
                     f"Line: '{index}'"
-                    f"\nError: '{line}'"
-                    " — line must contain exactly one ':',"
-                    " no space before ':'"
+                    f"\nError: '{line}' contains"
+                    " more than one ':'"
+                    "\n — every line in the map file must have"
+                    " exactly one ':' separating the keyword"
+                    " from its value with no space before ':',"
+                    " check for extra colons in this line"
                 )
             elif line.startswith("start_hub:"):
                 zone = self.parse_hub(index, line, nb_drones)
                 self.zones.append(zone)
                 start_hub_count += 1
-                self.check_count_start_end_hub(start_hub_count, 1, index, line)
+                self.check_count_start_end_hub(
+                    start_hub_count, 1, index, line)
             elif line.startswith("end_hub:"):
                 zone = self.parse_hub(index, line, nb_drones)
                 self.zones.append(zone)
                 end_hub_count += 1
-                self.check_count_start_end_hub(1, end_hub_count, index, line)
+                self.check_count_start_end_hub(
+                    1, end_hub_count, index, line)
             elif line.startswith("hub:"):
                 zone = self.parse_hub(index, line, None)
                 self.zones.append(zone)
@@ -475,10 +568,16 @@ class Parser:
             else:
                 raise CustomParserError(
                     f"line: {index}"
-                    f"\nError: '{line}'"
-                    " — unknown line type, valid types are:"
-                    " 'nb_drones:', 'start_hub:',"
-                    " 'end_hub:', 'hub:', 'connection:'"
+                    f"\nError: '{line}' starts with"
+                    " an unknown keyword"
+                    "\n — the map file only accepts these"
+                    " line types: 'nb_drones:' for drone count"
+                    " on line 1, 'start_hub:' for the start zone,"
+                    " 'end_hub:' for the end zone,"
+                    " 'hub:' for regular zones,"
+                    " 'connection:' for links between zones"
+                    "\n — check your spelling and make sure"
+                    " there is no space before ':'"
                 )
         self.check_count_start_end_hub(start_hub_count,
                                        end_hub_count, index, line)

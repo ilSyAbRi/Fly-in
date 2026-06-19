@@ -1,8 +1,8 @@
 
 nb_drones:9
 
-start_hub: start 0 0 fdkjsd [  max_drones=10  ]
-hub: waypoint1 4 0 [color=red]
+start_hub: start 0 0  [  max_drones=10  ]
+hub: waypoint1 0 0 [color=red]
 hub:waypoint2 1   0 [color=green]
 end_hub: goal 3 0  [max_drones=9]
 
