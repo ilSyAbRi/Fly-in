@@ -62,6 +62,7 @@ class Parser:
         self.dup_meta: list = []
         self.zones: list[Zone] = []
         self.connections: list[Connection] = []
+        self.nb_drones: int = 0
 
     def load_raw_input(self) -> list[tuple]:
         """
@@ -329,9 +330,7 @@ class Parser:
                 f"\nError: 'max_drones={value}' in '{line}'"
                 f" cannot be greater than the total number"
                 f" of drones which is 'nb_drones={nb_drones}'"
-                "\n — it makes no sense to allow more drones"
-                " in a zone than the total number of drones"
-                " in the simulation, reduce max_drones"
+                "\n — reduce max_drones"
                 f" to a value between 1 and {nb_drones}"
             )
         self.dup_meta.append("max_drones=")
@@ -343,6 +342,7 @@ class Parser:
         """
         try:
             _, name = line.split(':')
+            name = name.strip()
             name1, name2_metadata = name.split('-')
             track_meta_conection = any(c.isspace() for c in name2_metadata)
             if track_meta_conection:
@@ -540,8 +540,8 @@ class Parser:
             elif line.count(":") != 1:
                 raise CustomParserError(
                     f"Line: '{index}'"
-                    f"\nError: '{line}' contains"
-                    " more than one ':'"
+                    f"\nError: '{line}' should contains"
+                    " one ':'"
                     "\n — every line in the map file must have"
                     " exactly one ':' separating the keyword"
                     " from its value with no space before ':',"
