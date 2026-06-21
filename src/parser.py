@@ -377,7 +377,9 @@ class Parser:
                     f"Fix:   use the exact zone name as it was defined"
                 )
 
-            if name1 not in self.hubs and name1 not in self.start_hub and name1 not in self.end_hub:
+            if (name1 not in self.hubs
+                    and name1 not in self.start_hub
+                    and name1 not in self.end_hub):
                 raise CustomParserError(
                     f"Line: {nb_line}\n"
                     f"Error: zone '{name1}' was never defined\n"
@@ -388,7 +390,9 @@ class Parser:
                     f"Fix:   define '{name1}' using 'hub:', 'start_hub:',\n"
                     f"       or 'end_hub:' before this connection line"
                 )
-            if name2 not in self.hubs and name2 not in self.start_hub and name2 not in self.end_hub:
+            if (name2 not in self.hubs
+                    and name2 not in self.start_hub
+                    and name2 not in self.end_hub):
                 raise CustomParserError(
                     f"Line: {nb_line}\n"
                     f"Error: zone '{name2}' was never defined\n"

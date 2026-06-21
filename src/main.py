@@ -15,15 +15,13 @@ def main() -> None:
 
     data.dispatcher()
 
-    
     for key, value in data.hubs.items():
-        print(key, value.__dict__)
+        print(key, value.name, value.x, value.y)
     for key, value in data.start_hub.items():
         print(key, vars(value))
     for key, value in data.end_hub.items():
         print(key, vars(value))
- 
-    
+
     for connection in data.connections:
         print(connection.name_a, connection.name_b,
               connection.max_link_capacity)
