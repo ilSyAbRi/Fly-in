@@ -60,7 +60,9 @@ class Parser:
         self.file_path = file_path
         self.duplicate_list: list[tuple] = []
         self.dup_meta: list = []
-        self.zones: list[Zone] = []
+        self.hubs: dict[str, Zone] = {}
+        self.start_hub: dict[str, Zone] = {}
+        self.end_hub: dict[str, Zone] = {}
         self.connections: list[Connection] = []
         self.nb_drones: int = 0
 
@@ -142,7 +144,7 @@ class Parser:
         parse each hub
         """
         try:
-            _, data = line.split(':')
+            key, data = line.split(':')
             parts = data.split(maxsplit=3)
             name, x, y = parts[:3]
             X = int(x)
@@ -154,7 +156,8 @@ class Parser:
                     f"Got:   '{name}'\n"
                     f"Why:   dashes are used to separate zone names\n"
                     f"       in connection definitions like 'zone1-zone2'\n"
-                    f"       using '-' in a name would break connection parsing\n"
+                    f"       using '-' in a name would break "
+                    "connection parsing\n"
                     f"Fix:   rename the zone without using '-'"
                 )
             metadata = parts[3] if len(parts) == 4 else ""
@@ -373,14 +376,8 @@ class Parser:
                     f"       names so any space breaks the parsing\n"
                     f"Fix:   use the exact zone name as it was defined"
                 )
-            found_name1 = False
-            found_name2 = False
-            for zone in self.zones:
-                if name1 == zone.name:
-                    found_name1 = True
-                if name2 == zone.name:
-                    found_name2 = True
-            if found_name1 is not True:
+
+            if name1 not in self.hubs and name1 not in self.start_hub and name1 not in self.end_hub:
                 raise CustomParserError(
                     f"Line: {nb_line}\n"
                     f"Error: zone '{name1}' was never defined\n"
@@ -391,7 +388,7 @@ class Parser:
                     f"Fix:   define '{name1}' using 'hub:', 'start_hub:',\n"
                     f"       or 'end_hub:' before this connection line"
                 )
-            if found_name2 is not True:
+            if name2 not in self.hubs and name2 not in self.start_hub and name2 not in self.end_hub:
                 raise CustomParserError(
                     f"Line: {nb_line}\n"
                     f"Error: zone '{name2}' was never defined\n"
@@ -553,21 +550,22 @@ class Parser:
                     f"       or none at all breaks the line parsing\n"
                     f"Fix:   check for extra or missing ':' in this line"
                 )
+
             elif line.startswith("start_hub:"):
                 zone = self.parse_hub(index, line, nb_drones)
-                self.zones.append(zone)
+                self.start_hub[zone.name] = zone
                 start_hub_count += 1
                 self.check_count_start_end_hub(
                     start_hub_count, 1, index, line)
             elif line.startswith("end_hub:"):
                 zone = self.parse_hub(index, line, nb_drones)
-                self.zones.append(zone)
+                self.end_hub[zone.name] = zone
                 end_hub_count += 1
                 self.check_count_start_end_hub(
                     1, end_hub_count, index, line)
             elif line.startswith("hub:"):
                 zone = self.parse_hub(index, line, None)
-                self.zones.append(zone)
+                self.hubs[zone.name] = zone
             elif line.startswith("connection:"):
                 connection = self.parse_connection(index, line)
                 self.connections.append(connection)
@@ -594,4 +592,3 @@ class Parser:
         """
         clean_indexed_lns = self.load_raw_input()
         self.validate_extract_data(clean_indexed_lns)
-

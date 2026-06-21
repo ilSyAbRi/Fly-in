@@ -15,9 +15,15 @@ def main() -> None:
 
     data.dispatcher()
 
-    for zone in data.zones:
-        print(zone.name, zone.x, zone.y,
-              zone.zone_type, zone.color, zone.max_drones)
+    
+    for key, value in data.hubs.items():
+        print(key, value.__dict__)
+    for key, value in data.start_hub.items():
+        print(key, vars(value))
+    for key, value in data.end_hub.items():
+        print(key, vars(value))
+ 
+    
     for connection in data.connections:
         print(connection.name_a, connection.name_b,
               connection.max_link_capacity)
