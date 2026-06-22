@@ -58,8 +58,12 @@ class Parser:
         set instance with attribute file_path
         """
         self.file_path = file_path
+        # check dup for zone
         self.duplicate_list: list[tuple] = []
+        # check dup for meta zone
         self.dup_meta: list = []
+        # check dup for connection
+        self.connection_dup: list = []
         self.hubs: dict[str, Zone] = {}
         self.start_hub: dict[str, Zone] = {}
         self.end_hub: dict[str, Zone] = {}
@@ -376,7 +380,14 @@ class Parser:
                     f"       names so any space breaks the parsing\n"
                     f"Fix:   use the exact zone name as it was defined"
                 )
-
+            if (name1 == name2):
+                raise CustomParserError(
+                        f"Line: {nb_line}\n"
+                        f"Error: duplicate zone name in '{name}' "
+                        f"here is it '{name1}' and '{name2}'\n"
+                        f"the same name in the same connection zone"
+                        f" it should not be"
+                        )
             if (name1 not in self.hubs
                     and name1 not in self.start_hub
                     and name1 not in self.end_hub):
@@ -403,6 +414,13 @@ class Parser:
                     f"Fix:   define '{name2}' using 'hub:', 'start_hub:',\n"
                     f"       or 'end_hub:' before this connection line"
                 )
+            if (name1, name2) in self.connection_dup:
+                raise CustomParserError(f"Line: {nb_line}\n"
+                                        f"Error: '{name}' duplicate line name "
+                                        f"in '{name1}' and '{name2}'\n"
+                                        f"check other zone connection who have"
+                                        f" the same names")
+            self.connection_dup.append((name1,name2))
         except ValueError:
             raise StandardParserError(
                 f"Line: {nb_line}\n"
