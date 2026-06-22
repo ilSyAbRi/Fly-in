@@ -15,18 +15,17 @@ def main() -> None:
     parse = Parser(file_path)
 
     parse.dispatcher()
+    for _, val in parse.start_hub.items():
+        print(val.name, val.x, val.y, val.zone_type, val.max_drones, val.color)
+    print()
+    for _, val in parse.hubs.items():
+        print(val.name, val.x, val.y, val.zone_type, val.max_drones, val.color)
+    print()
+    for _, val in parse.end_hub.items():
+        print(val.name, val.x, val.y, val.zone_type, val.max_drones, val.color)
 
-    for key, value in parse.hubs.items():
-        print(key, value.name, value.x, value.y)
-    for key, value in parse.start_hub.items():
-        print(key, vars(value))
-    for key, value in parse.end_hub.items():
-        print(key, vars(value))
-
-    for connection in parse.connections:
-        print(connection.name_a, connection.name_b,
-              connection.max_link_capacity)
     graph = Graph(parse.connections)
+    print("\n\n")
     print(graph.links)
 
 

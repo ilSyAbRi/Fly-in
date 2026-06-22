@@ -6,6 +6,3 @@ class Graph:
             link_b = self.links.setdefault(connection.name_b, [])
             link_a.append(connection.name_b)
             link_b.append(connection.name_a)
-        print()
-        for key, val in self.links.items():
-            print(key, val)
