@@ -429,7 +429,7 @@ class Parser:
                 f"Got:   '{meta_connection}'\n"
                 f"Why:   metadata is optional but if present it must\n"
                 f"       start with '[' and end with ']' with no extra\n"
-                f"       characters or spaces outside the brackets\n"
+                f"       characters outside the brackets\n"
                 f"Fix:   '[max_link_capacity=2]'"
             )
         meta_connection_part = meta_connection[1:-1].strip().split()

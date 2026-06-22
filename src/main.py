@@ -1,5 +1,6 @@
 import sys
 from parser import Parser, StandardParserError, CustomParserError
+from graph import Graph
 from rich.traceback import install
 
 install()
@@ -11,22 +12,22 @@ def main() -> None:
 
     file_path = sys.argv[1] if len(sys.argv) > 1 else DEFAULT_PATH
 
-    data = Parser(file_path)
+    parse = Parser(file_path)
 
-    data.dispatcher()
+    parse.dispatcher()
 
-    for key, value in data.hubs.items():
+    for key, value in parse.hubs.items():
         print(key, value.name, value.x, value.y)
-    for key, value in data.start_hub.items():
+    for key, value in parse.start_hub.items():
         print(key, vars(value))
-    for key, value in data.end_hub.items():
+    for key, value in parse.end_hub.items():
         print(key, vars(value))
 
-    for connection in data.connections:
+    for connection in parse.connections:
         print(connection.name_a, connection.name_b,
               connection.max_link_capacity)
 
-
+    graph = Graph(parse.connections)
 if __name__ == "__main__":
 
     try:
