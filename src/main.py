@@ -26,8 +26,10 @@ def main() -> None:
     for connection in parse.connections:
         print(connection.name_a, connection.name_b,
               connection.max_link_capacity)
-
     graph = Graph(parse.connections)
+    print(graph.links)
+
+
 if __name__ == "__main__":
 
     try:
