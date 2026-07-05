@@ -65,8 +65,6 @@ class Parser:
         # check dup for connection
         self.connection_dup: list = []
         self.hubs: dict[str, Zone] = {}
-        self.start_hub: dict[str, Zone] = {}
-        self.end_hub: dict[str, Zone] = {}
         self.connections: list[Connection] = []
         self.nb_drones: int = 0
 
@@ -432,7 +430,7 @@ class Parser:
                 f"Fix:   'connection: zone1-zone2' or\n"
                 f"       'connection: zone1-zone2 [max_link_capacity=2]'"
             )
-        return Connection(name1, name2, max_link_capacity)
+        return Connection(self.hubs[name1], self.hubs[name2], max_link_capacity)
 
     def max_link_capacity_meta(self, meta_connection: str,
                                nb_line: int, line: str) -> int:
@@ -575,13 +573,13 @@ class Parser:
 
             elif line.startswith("start_hub:"):
                 zone = self.parse_hub(index, line, nb_drones)
-                self.start_hub[zone.name] = zone
+                self.hubs[zone.name] = zone
                 start_hub_count += 1
                 self.check_count_start_end_hub(
                     start_hub_count, 1, index, line)
             elif line.startswith("end_hub:"):
                 zone = self.parse_hub(index, line, nb_drones)
-                self.end_hub[zone.name] = zone
+                self.hubs[zone.name] = zone
                 end_hub_count += 1
                 self.check_count_start_end_hub(
                     1, end_hub_count, index, line)

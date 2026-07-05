@@ -20,10 +20,10 @@ class Zone:
 
 class Connection:
 
-    def __init__(self, name_a: str, name_b: str, max_link_capacity: int):
+    def __init__(self, zone_a: object, zone_b: object, max_link_capacity: int):
         """
         represent connection
         """
-        self.name_a = name_a
-        self.name_b = name_b
+        self.zone_a = zone_a
+        self.zone_b = zone_b
         self.max_link_capacity = max_link_capacity
