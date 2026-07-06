@@ -16,7 +16,8 @@ class Zone:
         self.zone_type = zone_type
         self.color = color
         self.max_drones = max_drones
-
+    def extract_data(self):
+        return {"name": self.name, "x": self.x, "y": self.y, "zone_type": self.zone_type, "max_drones": self.max_drones, "color": self.color}
 
 class Connection:
 
