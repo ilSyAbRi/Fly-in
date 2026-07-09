@@ -14,9 +14,8 @@ class PathFinding():
         dist = {key: float("inf") for key in self.graph.adj.keys()}
         dist[self.start_node] = 0
         pq = []
-
+        heapq.heappush(pq, (0, self.start_node))
         while pq:
-            heapq.heappush(pq, (0, self.start_node))
             current_cost, current_node = heapq.heappop(pq)
             neighbors = self.graph.get_neighbors(current_node)
             for neighbor in neighbors:
@@ -25,7 +24,7 @@ class PathFinding():
                 if new_cost < dist[neighbor_node.name]:
                     dist[neighbor_node.name] = new_cost
                     parent[neighbor_node.name] = current_node
-                    heapq.heappush(pq,(new_cost, neighbor_node))
+                    heapq.heappush(pq,(new_cost, neighbor_node.name))
 
 
     def dispatcher(self):
