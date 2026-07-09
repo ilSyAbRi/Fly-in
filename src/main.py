@@ -3,7 +3,7 @@ from parser import Parser, StandardParserError, CustomParserError
 from graph import Graph
 from rich.traceback import install
 from rich import print, markdown
-
+from pathfinding import PathFinding
 install()
 
 DEFAULT_PATH = "maps/easy/01_linear_path.txt"
@@ -16,6 +16,8 @@ def main() -> None:
     parse = Parser(file_path)
     parse.dispatcher()
     wifi = Graph(parse)
+    PathFinding(wifi)
+    
     data = {key: value.extract_data() for key, value in parse.hubs.items()}
     # 1. We define the table header with the exact same padding we will use for the data
     print("\n" + "=" * 70)

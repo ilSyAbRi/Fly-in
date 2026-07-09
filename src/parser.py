@@ -65,6 +65,8 @@ class Parser:
         # check dup for connection
         self.connection_dup: list = []
         self.hubs: dict[str, Zone] = {}
+        self.start_hub: dict[str, Zone] = {}
+        self.end_hub: dict[str, Zone] = {}
         self.connections: list[Connection] = []
         self.nb_drones: int = 0
 
@@ -418,7 +420,7 @@ class Parser:
                                         f"in '{name1}' and '{name2}'\n"
                                         f"check other zone connection who have"
                                         f" the same names")
-            self.connection_dup.append((name1,name2))
+            self.connection_dup.append((name1, name2))
         except ValueError:
             raise StandardParserError(
                 f"Line: {nb_line}\n"
@@ -574,15 +576,19 @@ class Parser:
             elif line.startswith("start_hub:"):
                 zone = self.parse_hub(index, line, nb_drones)
                 self.hubs[zone.name] = zone
+                self.start_hub[zone.name] = zone
                 start_hub_count += 1
                 self.check_count_start_end_hub(
                     start_hub_count, 1, index, line)
+
             elif line.startswith("end_hub:"):
                 zone = self.parse_hub(index, line, nb_drones)
                 self.hubs[zone.name] = zone
+                self.end_hub[zone.name] = zone
                 end_hub_count += 1
                 self.check_count_start_end_hub(
                     1, end_hub_count, index, line)
+
             elif line.startswith("hub:"):
                 zone = self.parse_hub(index, line, None)
                 self.hubs[zone.name] = zone
