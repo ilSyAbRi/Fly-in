@@ -29,9 +29,8 @@ class  Graph:
             return 2
         if zone.zone_type == "normal" or zone.zone_type == "priority":
             return 1
-
-        else:
-            return 1
+        if zone.zone_type == "blocked":
+            return float("inf")
 
     def get_neighbors(self, name: str):
 
