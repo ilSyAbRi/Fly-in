@@ -22,11 +22,6 @@ class PathFinding():
                 total_cost = dist[neighbor.name] + edge_cost
                 if total_cost == smallest:
                     routing[current_node].append(neighbor)
-        for key , values in routing.items():
-            print(key)
-            for val in values:
-                print(val.name)
-            print()
 
     def djikstra(self):
         dist = {}
@@ -47,9 +42,6 @@ class PathFinding():
                 neighbor_node, connection, cost = neighbor
                 new_cost = dist[current_node] + cost
                 if new_cost < dist[neighbor_node.name]:
-                    dist[neighbor_node.name] = new_cost
-                    heapq.heappush(pq,(new_cost, neighbor_node.name))
-                elif new_cost == dist[neighbor_node.name]:
                     dist[neighbor_node.name] = new_cost
                     heapq.heappush(pq,(new_cost, neighbor_node.name))
         
