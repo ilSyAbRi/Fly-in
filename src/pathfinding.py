@@ -6,12 +6,12 @@ class PathFinding():
         self.start_node = next(iter(self.graph.start_hub.keys()))
         self.end_hub = next(iter(self.graph.end_hub.keys()))
         self.dispatcher()
+        self.routing = {}
 
     def build_routing_table(self, dist):
-        routing = {}
 
         for current_node in self.graph.adj:
-            routing[current_node] = []
+            self.routing[current_node] = []
             neighbors = self.graph.get_neighbors(current_node)
             smallest = float("inf")
             for neighbor, connection, edge_cost in neighbors:
@@ -21,7 +21,7 @@ class PathFinding():
             for neighbor, connection, edge_cost in neighbors:
                 total_cost = dist[neighbor.name] + edge_cost
                 if total_cost == smallest:
-                    routing[current_node].append(neighbor)
+                    self.routing[current_node].append(neighbor.name)
 
     def djikstra(self):
         dist = {}

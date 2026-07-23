@@ -9,7 +9,7 @@ class  Graph:
         self.end_hub = parse.end_hub
         self.adj: Dict[str: List[Tuple[Zone, Connection, int]]] = {
             zone.name: [] for zone in parse.hubs.values()}
-        
+ 
 
         self._build_graph(parse)
 
@@ -19,10 +19,8 @@ class  Graph:
             zone_a = con.zone_a
             zone_b = con.zone_b
 
-            if zone_a.zone_type != "blocked":
-                self.adj[zone_b.name].append((zone_a, con, self.get_cost(zone_a)))
-            if zone_b.zone_type != "blocked":
-                self.adj[zone_a.name].append((zone_b, con, self.get_cost(zone_b)))
+            self.adj[zone_b.name].append((zone_a, con, self.get_cost(zone_b)))
+            self.adj[zone_a.name].append((zone_b, con, self.get_cost(zone_a)))
 
     def get_cost(self, zone: Zone) -> int:
         if zone.zone_type == "restricted":
