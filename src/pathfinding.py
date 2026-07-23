@@ -5,7 +5,6 @@ class PathFinding():
         self.graph = graph
         self.start_node = next(iter(self.graph.start_hub.keys()))
         self.end_hub = next(iter(self.graph.end_hub.keys()))
-        self.dispatcher()
         self.routing = {}
 
     def build_routing_table(self, dist):

@@ -548,7 +548,7 @@ class Parser:
         """
         dispatcher of zones only
         """
-        nb_drones = self.parse_nb_drones(clean_indexed_lns)
+        self.nb_drones = self.parse_nb_drones(clean_indexed_lns)
         start_hub_count = 0
         end_hub_count = 0
         for index, line in clean_indexed_lns[1:]:
@@ -574,7 +574,7 @@ class Parser:
                 )
 
             elif line.startswith("start_hub:"):
-                zone = self.parse_hub(index, line, nb_drones)
+                zone = self.parse_hub(index, line, self.nb_drones)
                 self.hubs[zone.name] = zone
                 self.start_hub[zone.name] = zone
                 start_hub_count += 1
@@ -582,7 +582,7 @@ class Parser:
                     start_hub_count, 1, index, line)
 
             elif line.startswith("end_hub:"):
-                zone = self.parse_hub(index, line, nb_drones)
+                zone = self.parse_hub(index, line, self.nb_drones)
                 self.hubs[zone.name] = zone
                 self.end_hub[zone.name] = zone
                 end_hub_count += 1
