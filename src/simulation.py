@@ -1,4 +1,4 @@
-import parser
+
 from graph import Graph
 from pathfinding import PathFinding
 from parser import Parser
@@ -16,7 +16,7 @@ class Simulation:
 
     def move_drone(self, drone_id: int) -> None:
         current_position = self.drones[drone_id]
-        possible_moves = self.path[current_position]
+        possible_moves = self.path[current_position.name]
         next_position = possible_moves[0]
         self.drones[drone_id] = next_position
 
@@ -28,9 +28,14 @@ class Simulation:
         return all(position == self.end for position in self.drones.values())
 
     def count_drones_in_zone(self, zone_name):
-        return len(self.drones[zone_name])
+        count = 0
+        for position in self.drones.values():
+            if zone_name == position:
+                count += 1
+        return count
 
     def dispatcher(self) -> None:
+        print(self.path)
         turn = 0
         while self.all_drones_finished() is False:
             turn += 1

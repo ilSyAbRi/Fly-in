@@ -1,4 +1,5 @@
 import heapq
+import sys
 
 class PathFinding():
     def __init__(self, graph):
@@ -20,7 +21,7 @@ class PathFinding():
             for neighbor, connection, edge_cost in neighbors:
                 total_cost = dist[neighbor.name] + edge_cost
                 if total_cost == smallest:
-                    self.routing[current_node].append(neighbor.name)
+                    self.routing[current_node].append(neighbor)
 
     def djikstra(self):
         dist = {}
@@ -46,6 +47,15 @@ class PathFinding():
         
         return dist
 
+    def check_connected(self, dist):
+        for node, cost in dist.items():
+            if cost == float("inf"):
+                return False
+        return True
+
     def dispatcher(self):
         dist = self.djikstra()
+        if not self.check_connected(dist):
+            print("Graph is unconnected")
+            return sys.exit(1)
         self.build_routing_table(dist)
