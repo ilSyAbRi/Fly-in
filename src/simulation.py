@@ -14,15 +14,14 @@ class Simulation:
         for id_drones in range(1, self.nb_drones + 1):
             self.drones[id_drones] = self.start
 
-    def move_drone(self, drone_id: int) -> None:
+    def get_next_position(self, drone_id: int) -> None:
         current_position = self.drones[drone_id]
-        possible_moves = self.path[current_position.name]
-        next_position = possible_moves[0]
-        self.drones[drone_id] = next_position
+        possible_moves = self.path[current_position]
+
+        return possible_moves[0]
 
     def simulation_turn(self):
-        for drone_id in self.drones:
-            self.move_drone(drone_id)
+        pass
 
     def all_drones_finished(self) -> bool:
         return all(position == self.end for position in self.drones.values())

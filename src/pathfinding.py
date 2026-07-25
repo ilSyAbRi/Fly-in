@@ -21,7 +21,7 @@ class PathFinding():
             for neighbor, connection, edge_cost in neighbors:
                 total_cost = dist[neighbor.name] + edge_cost
                 if total_cost == smallest:
-                    self.routing[current_node].append(neighbor)
+                    self.routing[current_node].append(neighbor.name)
 
     def djikstra(self):
         dist = {}
