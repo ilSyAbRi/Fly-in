@@ -20,11 +20,32 @@ class Simulation:
 
         return possible_moves[0]
 
+    def get_connection(self, current_position: str, next_position: str):
+        neighbors = self.graph.get_neighbors(current_position)
+
+        for zone, connection, cost in neighbors:
+            if zone.name == next_position:
+                return connection
+
+        return None
+
     def simulation_turn(self):
         for drone_id in range(1, self.nb_drones + 1):
+            if self.drones[drone_id] == self.end:
+                continue
+
             next_position = self.get_next_position(drone_id)
-            if self.can_enter_zone(next_position):
-                self.drones[drone_id] = next_position
+
+            if not self.can_enter_zone(next_position):
+                continue
+
+            if not self.can_use_connection(
+                    self.drones[drone_id],
+                    next_position
+            ):
+                continue
+
+            self.drones[drone_id] = next_position
 
     def all_drones_finished(self) -> bool:
         return all(position == self.end for position in self.drones.values())
@@ -44,10 +65,9 @@ class Simulation:
         return drones_count < zone_ob.max_drones
 
     def dispatcher(self) -> None:
-        print(self.path)
         turn = 0
-        while self.all_drones_finished() is False:
-            turn += 1
-            self.simulation_turn()
-            print(turn)
-            print(self.drones)
+        # while self.all_drones_finished() is False:
+        turn += 1
+        self.simulation_turn()
+        print(turn)
+        print(self.drones)
