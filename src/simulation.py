@@ -11,27 +11,37 @@ class Simulation:
         self.end = pathfinding.end_hub
         self.nb_drones = parser.nb_drones
         self.drones = {}
-        for id_drones in range(1, self.nb_drones + 1):
-            self.drones[id_drones] = self.start
+        for drones_id in range(1, self.nb_drones + 1):
+            self.drones[drones_id] = self.start
 
-    def get_next_position(self, drone_id: int) -> None:
+    def get_next_position(self, drone_id: int) -> str:
         current_position = self.drones[drone_id]
         possible_moves = self.path[current_position]
 
         return possible_moves[0]
 
     def simulation_turn(self):
-        pass
+        for drone_id in range(1, self.nb_drones + 1):
+            next_position = self.get_next_position(drone_id)
+            if self.can_enter_zone(next_position):
+                self.drones[drone_id] = next_position
 
     def all_drones_finished(self) -> bool:
         return all(position == self.end for position in self.drones.values())
 
     def count_drones_in_zone(self, zone_name):
-        count = 0
+        drones_count = 0
         for position in self.drones.values():
             if zone_name == position:
-                count += 1
-        return count
+                drones_count += 1
+        return drones_count
+
+    def can_enter_zone(self, zone_name: str) -> bool:
+        if zone_name == self.start or zone_name == self.end:
+            return True
+        zone_ob = self.graph.hubs[zone_name]
+        drones_count = self.count_drones_in_zone(zone_name)
+        return drones_count < zone_ob.max_drones
 
     def dispatcher(self) -> None:
         print(self.path)

@@ -7,8 +7,9 @@ class  Graph:
         """Potato tomato"""
         self.start_hub = parse.start_hub
         self.end_hub = parse.end_hub
+        self.hubs = parse.hubs
         self.adj: Dict[str: List[Tuple[Zone, Connection, int]]] = {
-            zone.name: [] for zone in parse.hubs.values()}
+            zone.name: [] for zone in self.hubs.values()}
  
 
         self._build_graph(parse)
