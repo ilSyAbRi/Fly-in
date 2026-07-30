@@ -1,61 +1,36 @@
 import heapq
-import sys
+from graph import Graph
+from models import Zone, Connection
+from typing import List, Dict
 
-class PathFinding():
-    def __init__(self, graph):
+class PathFinding:
+    def __init__(self, graph: Graph):
         self.graph = graph
-        self.start_node = next(iter(self.graph.start_hub.keys()))
-        self.end_hub = next(iter(self.graph.end_hub.keys()))
-        self.routing = {}
+        self.min_dis: Dict[Zone, int] = self.find_heuristic(self.graph)
+        print(self.min_dis)
 
-    def build_routing_table(self, dist):
 
-        for current_node in self.graph.adj:
-            self.routing[current_node] = []
-            neighbors = self.graph.get_neighbors(current_node)
-            smallest = float("inf")
-            for neighbor, connection, edge_cost in neighbors:
-                total_cost = dist[neighbor.name] + edge_cost
-                if total_cost < smallest:
-                    smallest = total_cost
-            for neighbor, connection, edge_cost in neighbors:
-                total_cost = dist[neighbor.name] + edge_cost
-                if total_cost == smallest:
-                    self.routing[current_node].append(neighbor.name)
 
-    def djikstra(self):
-        dist = {}
-        visited = set()
-        dist = {key: float("inf") for key in self.graph.adj.keys()}
-        dist[self.end_hub] = 0
+
+    @staticmethod
+    def find_heuristic(graph: Graph) -> Dict[Zone, int]:
         pq = []
-        heapq.heappush(pq, (0, self.end_hub))
+        end: Zone = graph.end_hub
+        distances: Dict[Zone, int] = {end: 0}
+        heapq.heappush(pq, [0, end.name, end])
+
         while pq:
-            current_cost, current_node = heapq.heappop(pq)
-            if current_node in visited:
+            current_cost , current_name, current_obj = heapq.heappop(pq)
+
+            neighbors =  graph.get_neighbors(current_name)
+
+            if current_cost > distances[current_obj]:
                 continue
 
-            visited.add(current_node)
+            for zone, connection, cost_to_b in neighbors:
+                new_cost = current_cost + cost_to_b
 
-            neighbors = self.graph.get_neighbors(current_node)
-            for neighbor in neighbors:
-                neighbor_node, connection, cost = neighbor
-                new_cost = dist[current_node] + cost
-                if new_cost < dist[neighbor_node.name]:
-                    dist[neighbor_node.name] = new_cost
-                    heapq.heappush(pq,(new_cost, neighbor_node.name))
-        
-        return dist
-
-    def check_connected(self, dist):
-        for node, cost in dist.items():
-            if cost == float("inf"):
-                return False
-        return True
-
-    def dispatcher(self):
-        dist = self.djikstra()
-        if not self.check_connected(dist):
-            print("Graph is unconnected")
-            return sys.exit(1)
-        self.build_routing_table(dist)
+                if zone not in distances or new_cost < distances[zone]:
+                    distances[zone] = new_cost
+                    heapq.heappush(pq, (new_cost, zone.name, zone))
+        return distances

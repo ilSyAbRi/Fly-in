@@ -1,12 +1,13 @@
 import sys
 
-import simulation
+# import simulation
 from parser import Parser, StandardParserError, CustomParserError
 from graph import Graph
 from rich.traceback import install
 from rich import print, markdown
 from pathfinding import PathFinding
-from simulation import Simulation
+# from simulation import Simulation
+
 install()
 
 DEFAULT_PATH = "maps/easy/01_linear_path.txt"
@@ -19,10 +20,8 @@ def main() -> None:
     parse = Parser(file_path)
     parse.dispatcher()
     graph = Graph(parse)
-    path = PathFinding(graph)
-    path.dispatcher()
-    simulation = Simulation(graph, path, parse)
-    simulation.dispatcher()
+    brain =  PathFinding(graph)
+    print([(obj.name , number) for obj, number in brain.min_dis.items()])
 
     
 if __name__ == "__main__":
