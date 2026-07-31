@@ -21,7 +21,7 @@ def main() -> None:
     parse.dispatcher()
     graph = Graph(parse)
     brain =  PathFinding(graph)
-    print([(obj.name , number) for obj, number in brain.min_dis.items()])
+    print(brain.plan_every_path())
 
     
 if __name__ == "__main__":

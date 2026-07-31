@@ -5,12 +5,12 @@ from typing import Dict, List, Tuple
 class  Graph:
     def __init__(self, parse):
         """Potato tomato"""
-        self.start_hub: Zone = [val for val in parse.start_hub.values()]
+        self.start_hub: Zone = next(iter(parse.start_hub.values()))
         self.end_hub: Zone = next(iter(parse.end_hub.values()))
         self.hubs: Dict[str, Zone] = parse.hubs
-        self.all_zones: List[Zone] = list(parse.start_hub.values()) + list(parse.end_hub.values()) + list(parse.hubs.values())
         self.adj: Dict[str: List[Tuple[Zone, Connection, int]]] = {
             zone.name: [] for zone in self.hubs.values()}
+        self.nb_drones: int = parse.nb_drones
  
 
         self._build_graph(parse)
@@ -34,13 +34,14 @@ class  Graph:
             return 1
         return 0
 
-    def get_connections(self, zone_a: Zone, zone_b: Zone) -> Connection:
+    def get_connections(self, zone_a: Zone, zone_b: Zone) -> Connection | None:
         neighbors = self.get_neighbors(zone_a.name)
 
         for zone, connections, _ in neighbors:
             if zone.name == zone_b.name:
                 return connections
 
+        return None
 
     def get_neighbors(self, name: str) -> List[Tuple[Zone, Connection, int]]:
 

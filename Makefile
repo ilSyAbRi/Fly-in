@@ -6,7 +6,7 @@ CYAN=\033[1;36m
 GREY=\033[38;5;243m
 RESET=\033[0m
 
-MAP ?= maps/easy/01_linear_path.txt
+MAP ?= maps/easy/02_simple_fork.txt
 SRC = src
 
 help:
