@@ -75,7 +75,7 @@ class PathFinding:
         ):
             return True
 
-        return zone.max_drones < self.occupied_zones[zone]
+        return zone.max_drones < self.occupied_zones[turn][zone]
 
 
     def _can_occupy_edge(self, conn: Connection, turn: int):

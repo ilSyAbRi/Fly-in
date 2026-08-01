@@ -4,9 +4,8 @@ import sys
 from parser import Parser, StandardParserError, CustomParserError
 from graph import Graph
 from rich.traceback import install
-from rich import print, markdown
 from pathfinding import PathFinding
-# from simulation import Simulation
+from simulation import Engine
 
 install()
 
@@ -21,7 +20,7 @@ def main() -> None:
     parse.dispatcher()
     graph = Graph(parse)
     brain =  PathFinding(graph)
-    print(brain.plan_every_path())
+    engine = Engine(parse,brain.plan_every_path(),graph)
 
     
 if __name__ == "__main__":

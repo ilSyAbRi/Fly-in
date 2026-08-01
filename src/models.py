@@ -1,3 +1,5 @@
+from typing import List, Tuple
+
 class Zone:
 
     def __init__(self, name: str, x: int, y: int,
@@ -26,3 +28,9 @@ class Connection:
         self.zone_a: Zone = zone_a
         self.zone_b: Zone = zone_b
         self.max_link_capacity = max_link_capacity
+
+
+class Drone:
+    def __init__(self, name: str, path: List[Tuple[Zone, int]]):
+        self.name = name
+        self.path = path
