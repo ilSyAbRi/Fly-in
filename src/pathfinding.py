@@ -3,7 +3,10 @@ from graph import Graph
 from models import Zone, Connection
 from typing import List, Dict, Any, Tuple
 
+
+
 # f = g + h + t
+
 
 class PathFinding:
     def __init__(self, graph: Graph):
@@ -24,9 +27,14 @@ class PathFinding:
                                self.start_hub,
                                None
                        ))
+        visited = set()
         while stack:
             current_tuple = heapq.heappop(stack)
             f_score, turn_count , priority_check, zone_name, zone_obj, parent = current_tuple
+            state = (zone_name, turn_count)
+            if state in visited:
+                continue
+            visited.add(state)
 
             # if we have found the end
             if zone_obj == self.end_hub:
@@ -59,7 +67,6 @@ class PathFinding:
                     new_f = (turn_count + cost) + self.min_dis[neighbor] + 0.1
                     heapq.heappush(stack, (new_f, turn_count + cost, priority_check ,neighbor.name, neighbor, current_tuple))
         return []
-
     def _can_occupy_zone(self,zone, turn: int):
 
         if(
@@ -70,7 +77,8 @@ class PathFinding:
         ):
             return True
 
-        return self.occupied_zones[turn][zone] < zone.max_drones
+        return zone.max_drones > self.occupied_zones[turn][zone]
+
 
     def _can_occupy_edge(self, conn: Connection, turn: int):
         conn_str = self._format_connection(conn)
@@ -79,7 +87,7 @@ class PathFinding:
                 or conn_str not in self.occupied_edges[turn]
         ):
             return True
-        return self.occupied_edges[turn][conn_str] < conn.max_link_capacity
+        return conn.max_link_capacity > self.occupied_edges[turn][conn_str]
 
     @staticmethod
     def _format_connection(conn: Connection) -> str:
@@ -87,12 +95,14 @@ class PathFinding:
         con_b: Zone = conn.zone_b
         return (f"{min(con_a.name, con_b.name)} .. {max(con_a.name, con_b.name)}")
 
+
+
     @staticmethod
     def find_heuristic(graph: Graph) -> Dict[Zone, int]:
         pq = []
         end: Zone = graph.end_hub
         distances: Dict[Zone, int] = {end: 0}
-        heapq.heappush(pq, [0, end.name, end])
+        heapq.heappush(pq, (0, end.name, end))
 
         while pq:
             current_cost , current_name, current_obj = heapq.heappop(pq)
@@ -127,9 +137,10 @@ class PathFinding:
 
                 # wait
                 elif previous_step == zone:
-                    pass
+                    previous_step = zone
                 else:
                     connect = self.graph.get_connections(zone, previous_step)
+                    previous_step = zone
                     if connect is not None:
                         con_str = self._format_connection(connect)
 
@@ -139,7 +150,6 @@ class PathFinding:
                             self.occupied_edges[turn][con_str] = 1
                         else:
                             self.occupied_edges[turn][con_str] += 1
-                    previous_step = zone
 
                 # if the turn not saved
                 if turn not in self.occupied_zones:
