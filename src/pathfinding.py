@@ -3,10 +3,7 @@ from graph import Graph
 from models import Zone, Connection
 from typing import List, Dict, Any, Tuple
 
-
-
 # f = g + h + t
-
 
 class PathFinding:
     def __init__(self, graph: Graph):
@@ -42,7 +39,6 @@ class PathFinding:
                 path.reverse()
                 return path
 
-
             # if we can wait
             if self._can_occupy_zone(zone_obj, turn_count + 1):
                wait_tuple = (f_score + 1, turn_count + 1, zone_name, priority_check,zone_obj, current_tuple)
@@ -62,7 +58,6 @@ class PathFinding:
                     priority_check = 0 if neighbor.zone_type == "priority" else 1
                     new_f = (turn_count + cost) + self.min_dis[neighbor] + 0.1
                     heapq.heappush(stack, (new_f, turn_count + cost, priority_check ,neighbor.name, neighbor, current_tuple))
-
         return []
 
     def _can_occupy_zone(self,zone, turn: int):
@@ -76,7 +71,6 @@ class PathFinding:
             return True
 
         return zone.max_drones < self.occupied_zones[turn][zone]
-
 
     def _can_occupy_edge(self, conn: Connection, turn: int):
         conn_str = self._format_connection(conn)
@@ -92,8 +86,6 @@ class PathFinding:
         con_a: Zone = conn.zone_a
         con_b: Zone = conn.zone_b
         return (f"{min(con_a.name, con_b.name)} .. {max(con_a.name, con_b.name)}")
-
-
 
     @staticmethod
     def find_heuristic(graph: Graph) -> Dict[Zone, int]:

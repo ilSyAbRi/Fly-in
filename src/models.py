@@ -29,8 +29,10 @@ class Connection:
         self.zone_b: Zone = zone_b
         self.max_link_capacity = max_link_capacity
 
-
 class Drone:
     def __init__(self, name: str, path: List[Tuple[Zone, int]]):
         self.name = name
         self.path = path
+
+    def __repr__(self):
+        return self.name

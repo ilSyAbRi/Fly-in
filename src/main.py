@@ -22,7 +22,6 @@ def main() -> None:
     brain =  PathFinding(graph)
     engine = Engine(parse,brain.plan_every_path(),graph)
 
-    
 if __name__ == "__main__":
 
     try:
