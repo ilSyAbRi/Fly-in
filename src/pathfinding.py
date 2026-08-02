@@ -41,7 +41,7 @@ class PathFinding:
 
             # if we can wait
             if self._can_occupy_zone(zone_obj, turn_count + 1):
-               wait_tuple = (f_score + 1, turn_count + 1, zone_name, priority_check,zone_obj, current_tuple)
+               wait_tuple = (f_score + 1, turn_count + 1, priority_check ,zone_name,zone_obj, current_tuple)
                heapq.heappush(stack, wait_tuple)
 
             # make a choice
@@ -70,7 +70,7 @@ class PathFinding:
         ):
             return True
 
-        return zone.max_drones < self.occupied_zones[turn][zone]
+        return self.occupied_zones[turn][zone] < zone.max_drones
 
     def _can_occupy_edge(self, conn: Connection, turn: int):
         conn_str = self._format_connection(conn)
@@ -79,7 +79,7 @@ class PathFinding:
                 or conn_str not in self.occupied_edges[turn]
         ):
             return True
-        return conn.max_link_capacity < self.occupied_edges[turn][conn_str]
+        return self.occupied_edges[turn][conn_str] < conn.max_link_capacity
 
     @staticmethod
     def _format_connection(conn: Connection) -> str:
@@ -127,7 +127,7 @@ class PathFinding:
 
                 # wait
                 elif previous_step == zone:
-                    previous_step = zone
+                    pass
                 else:
                     connect = self.graph.get_connections(zone, previous_step)
                     if connect is not None:
@@ -139,6 +139,7 @@ class PathFinding:
                             self.occupied_edges[turn][con_str] = 1
                         else:
                             self.occupied_edges[turn][con_str] += 1
+                    previous_step = zone
 
                 # if the turn not saved
                 if turn not in self.occupied_zones:
