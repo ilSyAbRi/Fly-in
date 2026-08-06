@@ -5,8 +5,9 @@ from parser import Parser, StandardParserError, CustomParserError
 from graph import Graph
 from rich.traceback import install
 from pathfinding import PathFinding
-from simulation import Engine
-
+from engine import Engine
+from display import Display
+import arcade
 install()
 
 DEFAULT_PATH = "maps/easy/01_linear_path.txt"
@@ -21,7 +22,8 @@ def main() -> None:
     graph = Graph(parse)
     brain =  PathFinding(graph)
     engine = Engine(parse,brain.plan_every_path(),graph)
-
+    display = Display(graph,engine.drones)
+    arcade.run()
 if __name__ == "__main__":
 
     try:
