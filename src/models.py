@@ -33,6 +33,3 @@ class Drone:
     def __init__(self, name: str, path: List[Tuple[Zone, int]]):
         self.name = name
         self.path = path
-
-    def __repr__(self):
-        return self.name

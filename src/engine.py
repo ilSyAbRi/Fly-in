@@ -23,7 +23,6 @@ class Engine():
         while self.current_turn <= self.last_turn:
             self.execute_turn()
             self.current_turn += 1
-        print(f"\n#Simulation ends in {self.last_turn} turn")
 
     def _move_drones(self):
         moves = []

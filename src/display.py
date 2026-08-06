@@ -1,5 +1,5 @@
 import arcade
-CAMERA_SPEED = 100
+CAMERA_SPEED = 500
 
 class Display(arcade.Window):
     def __init__(self,graph, drones):
@@ -26,9 +26,38 @@ class Display(arcade.Window):
                 30,
                 color,
             )
+    def _get_drone_position(self, drone):
+        for zone, turn in drone.path:
+            if turn == self.current_turn:
+                return zone.x, zone.y
+
+        for i in range(len(drone.path) - 1):
+            zone_a, turn_a = drone.path[i]
+            zone_b, turn_b = drone.path[i + 1]
+
+            if turn_a < self.current_turn < turn_b:
+                x = (zone_a.x + zone_b.x) / 2
+                y = (zone_a.y + zone_b.y) / 2
+                return x, y
+        return None
+
+    def _draw_drones(self):
+        for drone in self.drones:
+            position = self._get_drone_position(drone)
+            if position is None:
+                continue
+            x, y = position
+
+            arcade.draw_circle_filled(
+                self.width / 2 + x * 130,
+                self.height / 2 + y * 130,
+                10,
+                arcade.color.PINK
+            )
+
     def _draw_connections(self):
         for zone_a in self.graph.hubs.values():
-            for zone_b, _, _ in self.graph.get_neighbors(zone_a.name):
+            for zone_b, connection, _ in self.graph.get_neighbors(zone_a.name):
 
                 arcade.draw_line(
                     self.width / 2 + zone_a.x * 130,
@@ -57,5 +86,13 @@ class Display(arcade.Window):
     def on_draw(self):
         self.clear()
         self.camera.use()
+        arcade.draw_text(
+            f"Turn: {self.current_turn}",
+            20,
+            self.height - 40,
+            arcade.color.WHITE,
+            20,
+        )
         self._draw_connections()
         self._draw_zone()
+        self._draw_drones()
