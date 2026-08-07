@@ -7,7 +7,6 @@ GREY=\033[38;5;243m
 RESET=\033[0m
 
 MAP ?= maps/easy/01_linear_path.txt
-SRC = src
 
 help:
 	@echo "\n$(PURPLE)━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━$(RESET)"
@@ -186,7 +185,7 @@ run:
 	@echo "$(PURPLE)🚀 Starting Fly-in simulation...$(RESET)"
 	@echo "$(CYAN)📄 Map: $(MAP) $(RESET)"
 	@echo "-----------------------------------"
-	@python3 src/main.py $(MAP)
+	@python3 main.py $(MAP)
 	@echo "-----------------------------------"
 	@echo "$(GREEN)✅ Simulation finished$(RESET)"
 
@@ -194,32 +193,27 @@ run:
 clean:
 	@echo "$(PURPLE)Cleaning project...$(RESET)"
 
-	@# find syntax: find [path] [conditions] [actions]
-	@find . -type d \
-		\( \
-		-name "__pycache__" \
-		-o -name ".pytest_cache" \
-		-o -name ".mypy_cache" \
-		\) \
-		-exec rm -rf {} +
 	
-	@find . -type f \
-		-name "*.pyc" \
-		-delete
+	@rm -rf __pycache__
+	@rm -rf src/__pycache__
+	@rm -rf .pytest_cache
+	@rm -rf .mypy_cache
+	@rm -f *.pyc
+	@rm -f src/*.pyc
 
 	@echo "$(GREEN)✔ Clean done: removed pycache, pytest, and mypy caches$(RESET)"
 
 
 lint:
 	@echo "$(CYAN)🧪 Running code quality checks...$(RESET)"
-	@echo "$(GREY)-----------------------------------$(RESET)"
-	flake8 $(SRC)
-	@echo "$(GREY)-----------------------------------$(RESET)"
-	@echo "$(CYAN)📌 Running mypy type checks...$(RESET)"
-	mypy $(SRC) --warn-return-any --warn-unused-ignores --ignore-missing-imports --disallow-untyped-defs --check-untyped-defs
-	@echo "$(GREY)-----------------------------------$(RESET)"
+	@venv/bin/flake8 . --exclude=venv
+	@venv/bin/mypy . --exclude=venv \
+		--warn-return-any \
+		--warn-unused-ignores \
+		--ignore-missing-imports \
+		--disallow-untyped-defs \
+		--check-untyped-defs
 	@echo "$(GREEN)✅ Lint finished$(RESET)"
-
 
 debug:
 	@echo "$(PURPLE)🐛 Starting debug mode (pdb)...$(RESET)"

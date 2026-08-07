@@ -11,8 +11,8 @@ class Display(arcade.Window):
 
     def _draw_zone(self):
         for zone in self.graph.hubs.values():
-            screen_x = self.width / 2 + zone.x * 130
-            screen_y = self.height / 2 + zone.y * 130
+            screen_x = self.width / 2 + zone.x * 180
+            screen_y = self.height / 2 + zone.y * 180
 
             color = getattr(
                 arcade.color,
@@ -26,6 +26,35 @@ class Display(arcade.Window):
                 30,
                 color,
             )
+
+        # Zone name above the circle
+            arcade.draw_text(
+                zone.name,
+                screen_x,
+                screen_y + 40,
+                arcade.color.WHITE,
+                12,
+                anchor_x="center",
+            )
+
+        # Letter inside restricted or priority zones
+            label = ""
+
+            if zone.zone_type == "restricted":
+                label = "R"
+            elif zone.zone_type == "priority":
+                label = "P"
+
+            arcade.draw_text(
+                label,
+                screen_x,
+                screen_y,
+                arcade.color.PURPLE,
+                12,
+                anchor_x="center",
+                anchor_y="center",
+        )
+
     def _get_drone_position(self, drone):
         for zone, turn in drone.path:
             if turn == self.current_turn:
@@ -49,8 +78,8 @@ class Display(arcade.Window):
             x, y = position
 
             arcade.draw_circle_filled(
-                self.width / 2 + x * 130,
-                self.height / 2 + y * 130,
+                self.width / 2 + x * 180,
+                self.height / 2 + y * 180,
                 10,
                 arcade.color.PINK
             )
@@ -60,10 +89,10 @@ class Display(arcade.Window):
             for zone_b, connection, _ in self.graph.get_neighbors(zone_a.name):
 
                 arcade.draw_line(
-                    self.width / 2 + zone_a.x * 130,
-                    self.height / 2 + zone_a.y * 130,
-                    self.width / 2 + zone_b.x * 130,
-                    self.height / 2 + zone_b.y * 130,
+                    self.width / 2 + zone_a.x * 180,
+                    self.height / 2 + zone_a.y * 180,
+                    self.width / 2 + zone_b.x * 180,
+                    self.height / 2 + zone_b.y * 180,
                     arcade.color.GRAY,
                     3,
                 )
