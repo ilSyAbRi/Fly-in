@@ -232,7 +232,7 @@ install:
 	@venv/bin/python3 -m pip install --upgrade pip
 
 	@echo "$(PURPLE)Installing dependencies in venv...$(RESET)"
-	@venv/bin/pip install flake8 mypy rich
+	@venv/bin/pip install flake8 mypy rich arcade
 
 	@echo "$(GREEN)✔ Environment ready (venv + tools installed)$(RESET)"
 
