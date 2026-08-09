@@ -169,7 +169,6 @@ class PathFinding:
             or zone.name == self.graph.end_hub.name
         ):
             return True
-
         return (
             zone.max_drones
             > self.occupied_zones[turn][zone]

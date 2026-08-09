@@ -776,7 +776,7 @@ class Parser:
                 if zone.zone_type == "blocked":
                     raise CustomParserError(
                         f"Line: {index}\n"
-                        f"Error: start hub '{zone.name}' cannot be blocked"
+                        f"Error: end hub '{zone.name}' cannot be blocked"
                     )
                 self.hubs[zone.name] = zone
                 self.end_hub[zone.name] = zone

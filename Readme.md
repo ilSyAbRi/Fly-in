@@ -1,245 +1,221 @@
-# Fly_in
+# Fly-in
 
-## subject
+## Description
 
-- 📙 [Fly_in subject](subject/Fly_in.pdf)
+**Fly-in** is a turn-based drone pathfinding simulation written in Python.
 
-<div align="center">
+The program reads a map describing drones, zones, zone types, capacities, and
+connections. It builds a graph from that map, computes valid routes from the
+start hub to the end hub, and simulates drone movement turn by turn while
+respecting zone and connection capacities.
 
-⭐ Have fun learning and coding ⭐
+The project also includes an Arcade-based visualizer to display the graph and
+drone movements.
 
-</div>
+## Instructions
 
-<br>
+### Requirements
 
----
+- Python 3.10+
+- `uv`
 
-<br><br><br> 
+### Install dependencies
 
-## what i should start with ?
-
-```.py
-run: make or make help 
+```bash
+make install
 ```
 
-<br><br><br> 
+Or directly:
 
-## OSError?
-
-- OSError is an exception raised when the operating system fails to perform a system-level operation requested by your program.
-
-### What is a “system-level operation”?
-
-Things like:
-
-- opening a file
-- creating/deleting folders
-- accessing permissions
-- reading from disk
-- network/socket operations
-- interacting with processes/devices
-
-### Why does it happen?
-
-Because Python itself does not control the hardware directly.
-It asks the operating system (Linux, Windows, macOS) to do the work.
-
-If the OS cannot do it, Python raises OSError or one of its subclasses.
-
-> A system-level operation is any operation where your program must ask the operating system to access or manage real computer resources such as files, hardware, memory, processes, or networking.
-
-```
-BaseException
-└── Exception
-    └── OSError
-        ├── FileNotFoundError
-        ├── PermissionError
-        ├── IsADirectoryError
-        ├── TimeoutError
-        ├── ConnectionError
-        └── ...
+```bash
+uv sync
 ```
 
-> OSError happens when the OS says:
-“I cannot do what your program requested.”
+### Run the project
 
+Using the Makefile:
 
----
-
-<br>
-<br>
-
-## models
-
-### From the subject, what are the main things?
-
-- A zone (hub, start_hub, end_hub)
-- A connection between zones
-- A graph that contains everything
-
-### Next question:
-
-#### Should a Zone know about connections?
-
-My recommendation:
-
-No.
-
-Keep it simple first.
-
-A zone should only describe itself.
-
-The graph will know how zones are connected.
-
-<br>
-<br>
-
-### the plan i manage to go with it in parsing
-
-#### Phase 1 — Load
-
-- load raw data
-- clean it
-- index it
-
-#### Phase 2 — Extract
-- extract nb_drones
-- extract all hubs
-- extract all connections
-
-###### parse_nb_drones()
-
-- receive raw line
-- extract the number
-- validate it's an integer
-- validate it's positive
-- return the number
-
-###### parse_single_hub()
-
-- receive raw line
-- extract name
-- extract x, y
-- extract metadata (zone_type, color, max_drones)
-- validate coords are integers
-- validate zone_type is valid
-- validate max_drones is positive
-- return clean hub data
-
-###### parse_single_connection()
-
-- receive raw line
-- extract zone1 and zone2
-- extract max_link_capacity if exists
-- validate format is correct
-- validate max_link_capacity is positive
-- return clean connection data
-
-#### Phase 3 — Validate
-
-- validate nb_drones
-- validate hubs
-- validate connections
-- validate relationships between them
-
-```
-exactly one start_hub?
-exactly one end_hub?
-unique zone names?
-connections link existing zones?
-duplicate connections?
+```bash
+make run MAP=maps/easy/01_linear_path.txt
 ```
 
-#### Phase 4 — Build
-- build graph
-- return it
+Or directly:
 
-#### Dispatcher is just the orchestrator — it calls the phases in order, nothing more:
-
-```py
-dispatcher()
-     data = load()
-     extracted = extract(data)
-     validate(extracted)
-     graph = build(extracted)
-     return graph
-```
-<br>
-<br>
-```
-Phase 1 — Load
-    → read, clean, index
-
-Phase 2 — Extract + local validate
-    → extract each line
-    → validate it AS you extract it
-    → nb_drones, hubs, connections
-
-Phase 3 — Cross validate
-    → unique names
-    → connections link existing zones
-    → no duplicates
-
-Phase 4 — Build
-    → create objects
-    → return graph
+```bash
+uv run python main.py maps/easy/01_linear_path.txt
 ```
 
-### Slicing Concept
+If no map path is provided, the program uses the default map.
 
-[start : end : step]
-   ↑       ↑      ↑
-where   where   jump
-begin   stop    size
+### Visualizer controls
 
-positive step → left to right
-negative step → right to left
-missing value → use default (0, end, 1)
+- `W` / `Up Arrow` — move camera up
+- `S` / `Down Arrow` — move camera down
+- `A` / `Left Arrow` — move camera left
+- `D` / `Right Arrow` — move camera right
+- `Space` — advance the simulation by one turn
+- Hold `Space` — continuously advance through turns
 
+## Algorithm explanation
 
-my_list = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+Fly-in uses a graph-based pathfinding system.
 
-# ── START only ──
-my_list[3:]     # → [3, 4, 5, 6, 7, 8, 9]  from index 3 to end
-my_list[0:]     # → [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]  everything
-my_list[-3:]    # → [7, 8, 9]  last 3 elements
+Each zone is represented as a node and each connection between two zones is
+represented as an edge.
 
-# ── END only ──
-my_list[:3]     # → [0, 1, 2]  from start to index 3
-my_list[:0]     # → []  empty
-my_list[:-3]    # → [0, 1, 2, 3, 4, 5, 6]  everything except last 3
+Zone traversal costs are:
 
-# ── START + END ──
-my_list[2:5]    # → [2, 3, 4]  from index 2 to 5
-my_list[0:3]    # → [0, 1, 2]  from start to index 3
-my_list[-3:-1]  # → [7, 8]  from -3 to -1
+- **normal** — 1 turn
+- **priority** — 1 turn
+- **restricted** — 2 turns
+- **blocked** — cannot be entered
 
-# ── STEP only ──
-my_list[::2]    # → [0, 2, 4, 6, 8]  every 2 elements
-my_list[::3]    # → [0, 3, 6, 9]  every 3 elements
-my_list[::-1]   # → [9, 8, 7, 6, 5, 4, 3, 2, 1, 0]  reversed
+### Heuristic calculation
 
-# ── START + STEP ──
-my_list[2::2]   # → [2, 4, 6, 8]  from index 2, every 2
-my_list[1::3]   # → [1, 4, 7]  from index 1, every 3
+Before searching for drone paths, the program calculates the minimum known
+distance from each reachable zone to the end hub.
 
-# ── END + STEP ──
-my_list[:8:2]   # → [0, 2, 4, 6]  from start to 8, every 2
-my_list[::-2]   # → [9, 7, 5, 3, 1]  reversed every 2
+This is done using a Dijkstra-style search starting from the end hub.
 
-# ── START + END + STEP ──
-my_list[1:8:2]  # → [1, 3, 5, 7]  from 1 to 8, every 2
-my_list[8:1:-1] # → [8, 7, 6, 5, 4, 3, 2]  from 8 to 1 backwards
-my_list[9:0:-2] # → [9, 7, 5, 3, 1]  from 9 to 0, every 2 backwards
+The calculated distances are used as the heuristic for the main pathfinding
+search.
 
-# ── SPECIAL ──
-my_list[:]      # → [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]  full copy
-my_list[::-1]   # → [9, 8, 7, 6, 5, 4, 3, 2, 1, 0]  reversed
-my_list[::1]    # → [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]  normal copy
+The heuristic calculation also allows the program to detect disconnected parts
+of the graph.
 
-# ── NEGATIVE INDICES ──
-my_list[-1]     # → 9   last element
-my_list[-2]     # → 8   second to last
-my_list[-3:]    # → [7, 8, 9]  last 3
-my_list[:-3]    # → [0, 1, 2, 3, 4, 5, 6]  all except last 3
+### Pathfinding
 
+The main pathfinding algorithm uses an A*-style priority queue.
+
+For each possible movement, the algorithm considers the current turn, movement
+cost, and estimated remaining distance to the end.
+
+Conceptually:
+
+```text
+f = arrival turn + estimated distance to the end
+```
+
+A search state contains both the zone and the turn:
+
+```text
+(zone, turn)
+```
+
+The turn is part of the state because a zone can be available during one turn
+but full during another.
+
+The pathfinder also considers:
+
+- zone capacity (`max_drones`)
+- connection capacity (`max_link_capacity`)
+- waiting in the current zone
+- restricted zones that require two turns to enter
+- priority zones as a tie-breaker
+
+Drones are planned sequentially.
+
+After the path of one drone is calculated, the zones and connections used by
+that drone are recorded. The next drone is then planned while respecting those
+reservations.
+
+This prevents drones from exceeding zone or connection capacity during the same
+turn.
+
+## Visual representation
+
+Fly-in includes a graphical visualization built using Arcade.
+
+The visualizer displays:
+
+- zones as circles
+- zone names above their circles
+- connections as lines between zones
+- drones as smaller circles
+- the current simulation turn
+- camera movement for navigating larger maps
+
+Zone types are represented using labels:
+
+```text
+N = Normal
+R = Restricted
+P = Priority
+```
+
+The visualization makes it easier to understand how drones move through the
+graph over time.
+
+It also helps show:
+
+- drones waiting for available capacity
+- movement through restricted zones
+- different paths through the graph
+- multiple drones moving at the same time
+- the structure of larger maps
+
+The camera can be moved with the keyboard so maps that extend beyond the
+initial screen can still be explored.
+
+## Example input
+
+```text
+nb_drones: 2
+start_hub: Start 0 0
+hub: A 1 0
+end_hub: End 2 0
+
+connection: Start-A
+connection: A-End
+```
+
+This map contains two drones traveling from `Start` to `End` through zone `A`.
+
+## Expected output
+
+```text
+D1-A
+D1-End D2-A
+D2-End
+```
+
+Each output line represents one simulation turn.
+
+A normal drone movement is displayed as:
+
+```text
+DRONE-ZONE
+```
+
+For movement through a restricted connection, the output can contain both sides
+of the connection:
+
+```text
+DRONE-FROM-TO
+```
+
+## Project structure
+
+```text
+.
+├── main.py
+├── parser.py
+├── models.py
+├── graph.py
+├── pathfinding.py
+├── engine.py
+├── display.py
+├── maps/
+├── Makefile
+└── README.md
+```
+
+### Files
+
+- `main.py` — starts the program and connects all components
+- `parser.py` — reads and validates map files
+- `models.py` — defines zones, connections, and drones
+- `graph.py` — builds the graph representation
+- `pathfinding.py` — calculates and schedules drone paths
+- `engine.py` — executes simulation turns and produces output
+- `display.py` — provides the Arcade graphical visualization

@@ -1,5 +1,3 @@
-"""Run the Fly-in drone simulation."""
-
 import sys
 
 import arcade

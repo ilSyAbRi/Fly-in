@@ -219,7 +219,7 @@ debug:
 	@echo "$(PURPLE)🐛 Starting debug mode (pdb)...$(RESET)"
 	@echo "$(BLUE)📄 Map: $(MAP)$(RESET)"
 	@echo "$(GREY)-----------------------------------$(RESET)"
-	@python3 -m pdb src/main.py $(MAP)
+	@python3 -m pdb main.py $(MAP)
 	@echo "$(GREY)-----------------------------------$(RESET)"
 	@echo "$(GREEN)✅ Debug session ended$(RESET)"
 
