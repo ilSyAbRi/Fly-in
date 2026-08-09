@@ -789,7 +789,7 @@ class Parser:
                 )
 
             elif line.startswith("hub:"):
-                zone = self.parse_hub(index, line, self.nb_drones)
+                zone = self.parse_hub(index, line, None)
                 self.hubs[zone.name] = zone
             elif line.startswith("connection:"):
                 connection = self.parse_connection(index, line)
