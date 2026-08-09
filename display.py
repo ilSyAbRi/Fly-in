@@ -1,10 +1,33 @@
 import arcade
 
+from graph import Graph
+from models import Drone
+
 CAMERA_SPEED = 850
 
+
 class Display(arcade.Window):
-    def __init__(self, graph, drones):
-        super().__init__(fullscreen=True, vsync=True, title="FLY-IN")
+    """Display the graph and drone movements in an Arcade window."""
+
+    def __init__(
+        self,
+        graph: Graph,
+        drones: list[Drone],
+    ) -> None:
+        """Initialize the simulation display.
+
+        Args:
+            graph: Graph containing the zones and connections.
+            drones: Drones and their planned paths.
+
+        Returns:
+            None.
+        """
+        super().__init__(
+            fullscreen=True,
+            vsync=True,
+            title="FLY-IN",
+        )
 
         self.graph = graph
         self.drones = drones
@@ -23,10 +46,15 @@ class Display(arcade.Window):
         self.right_pressed = False
 
         self.space_pressed = False
-        self.space_timer = 0
+        self.space_timer: float = 0
         self.background_color = (35, 35, 40)
 
-    def _draw_zone(self):
+    def _draw_zone(self) -> None:
+        """Draw all zones in the graph.
+
+        Returns:
+            None.
+        """
         for zone in self.graph.hubs.values():
             screen_x = self.width / 2 + zone.x * 130
             screen_y = self.height / 2 + zone.y * 130
@@ -70,7 +98,18 @@ class Display(arcade.Window):
                 anchor_y="center",
             )
 
-    def _get_drone_position(self, drone):
+    def _get_drone_position(
+        self,
+        drone: Drone,
+    ) -> tuple[float, float] | None:
+        """Get the position of a drone at the current turn.
+
+        Args:
+            drone: Drone whose position should be calculated.
+
+        Returns:
+            The drone coordinates, or None if no position is available.
+        """
         for zone, turn in drone.path:
             if turn == self.current_turn:
                 return zone.x, zone.y
@@ -87,7 +126,12 @@ class Display(arcade.Window):
 
         return None
 
-    def _draw_drones(self):
+    def _draw_drones(self) -> None:
+        """Draw all drones at their current positions.
+
+        Returns:
+            None.
+        """
         for drone in self.drones:
             position = self._get_drone_position(drone)
 
@@ -103,10 +147,14 @@ class Display(arcade.Window):
                 arcade.color.PINK,
             )
 
-    def _draw_connections(self):
-        for zone_a in self.graph.hubs.values():
-            for zone_b, connection, _ in self.graph.get_neighbors(zone_a.name):
+    def _draw_connections(self) -> None:
+        """Draw all connections between zones.
 
+        Returns:
+            None.
+        """
+        for zone_a in self.graph.hubs.values():
+            for zone_b, _, _ in self.graph.get_neighbors(zone_a.name):
                 arcade.draw_line(
                     self.width / 2 + zone_a.x * 130,
                     self.height / 2 + zone_a.y * 130,
@@ -116,7 +164,20 @@ class Display(arcade.Window):
                     3,
                 )
 
-    def on_key_press(self, key: int, modifiers: int):
+    def on_key_press(
+        self,
+        key: int,
+        modifiers: int,
+    ) -> None:
+        """Handle keyboard press events.
+
+        Args:
+            key: Key that was pressed.
+            modifiers: Active keyboard modifiers.
+
+        Returns:
+            None.
+        """
         if key == arcade.key.UP or key == arcade.key.W:
             self.up_pressed = True
 
@@ -135,7 +196,20 @@ class Display(arcade.Window):
             if self.current_turn < self.last_turn:
                 self.current_turn += 1
 
-    def on_key_release(self, key: int, modifiers: int):
+    def on_key_release(
+        self,
+        key: int,
+        modifiers: int,
+    ) -> None:
+        """Handle keyboard release events.
+
+        Args:
+            key: Key that was released.
+            modifiers: Active keyboard modifiers.
+
+        Returns:
+            None.
+        """
         if key == arcade.key.UP or key == arcade.key.W:
             self.up_pressed = False
 
@@ -152,7 +226,15 @@ class Display(arcade.Window):
             self.space_pressed = False
             self.space_timer = 0
 
-    def on_update(self, delta_time: float):
+    def on_update(self, delta_time: float) -> None:
+        """Update camera movement and simulation timing.
+
+        Args:
+            delta_time: Time elapsed since the previous update.
+
+        Returns:
+            None.
+        """
         camera_x, camera_y = self.camera.position
 
         if self.up_pressed:
@@ -178,7 +260,12 @@ class Display(arcade.Window):
 
                 self.space_timer = 0
 
-    def on_draw(self):
+    def on_draw(self) -> None:
+        """Draw the current simulation frame.
+
+        Returns:
+            None.
+        """
         self.clear()
         self.camera.use()
 

@@ -1,104 +1,133 @@
-from models import Zone, Connection
+from models import Connection, Zone
 
 
 class CustomParserError(Exception):
-    """
-    class for custom error
-    """
+    """Represent custom parser validation errors."""
+
     pass
 
 
 class StandardParserError(Exception):
-    """
-    class for standar error
-    """
+    """Represent standard parsing and conversion errors."""
+
     pass
 
 
 class LineCleaner:
-    """
-    helper methodes for parser to clean lines
-    """
+    """Clean raw map lines before parsing."""
 
     def __init__(self, lines_to_clean: list[str]) -> None:
-        """
-        just set lines to clean to self.data to start cleaning
+        """Initialize the line cleaner.
+
+        Args:
+            lines_to_clean: Raw lines to clean.
+
+        Returns:
+            None.
         """
         self.data = lines_to_clean
 
     def remove_comments(self) -> "LineCleaner":
-        """
-        clean lines form comment any comment
+        """Remove comments from all lines.
+
+        Returns:
+            The current cleaner instance.
         """
         self.data = [line.split("#")[0] for line in self.data]
         return self
 
     def strip_spaces(self) -> "LineCleaner":
-        """
-        clean lines from front and up spaces:
+        """Strip leading and trailing spaces from all lines.
+
+        Returns:
+            The current cleaner instance.
         """
         self.data = [line.strip() for line in self.data]
         return self
 
     def remove_empty_lines(self) -> "LineCleaner":
-        """
-        skip empty lines just to make good structure to work with
+        """Remove empty lines from the data.
+
+        Returns:
+            The current cleaner instance.
         """
         self.data = [line for line in self.data if line]
         return self
 
 
 class Parser:
-    """
-    the main parser class
-    """
+    """Parse and validate a Fly-in map file."""
 
     def __init__(self, file_path: str) -> None:
-        """
-        set instance with attribute file_path
+        """Initialize the parser.
+
+        Args:
+            file_path: Path to the map file.
+
+        Returns:
+            None.
         """
         self.file_path = file_path
         # check dup for zone
-        self.duplicate_list: list[tuple] = []
+        self.duplicate_list: list[tuple[str, int, int]] = []
         # check dup for meta zone
-        self.dup_meta: list = []
+        self.dup_meta: list[str] = []
         # check dup for connection
-        self.connection_dup: list = []
+        self.connection_dup: list[tuple[str, str]] = []
         self.hubs: dict[str, Zone] = {}
         self.start_hub: dict[str, Zone] = {}
         self.end_hub: dict[str, Zone] = {}
         self.connections: list[Connection] = []
         self.nb_drones: int = 0
 
-    def load_raw_input(self) -> list[tuple]:
-        """
-            Load the map file and preserve original line numbers
-            for parser error reporting.
+    def load_raw_input(self) -> list[tuple[int, str]]:
+        """Load the map file and preserve original line numbers.
+
+        Returns:
+            Cleaned lines paired with their original line numbers.
+
+        Raises:
+            CustomParserError: If the file is empty.
+            StandardParserError: If the file cannot be read.
         """
         try:
-            with open(self.file_path, 'r') as file:
+            with open(self.file_path, "r") as file:
                 content = file.read()
                 if not content.strip():
-                    raise CustomParserError(f"Empty File: {self.file_path}")
+                    raise CustomParserError(
+                        f"Empty File: {self.file_path}"
+                    )
                 lines = content.splitlines()
                 raw_ln = LineCleaner(lines)
                 raw_ln.remove_comments().strip_spaces()
                 clean_ln = LineCleaner(lines)
                 clean_ln.remove_comments().strip_spaces().remove_empty_lines()
                 index_lines = [
-                        (i, v)
-                        for i, v in enumerate(raw_ln.data, start=1)
-                        if v in clean_ln.data
-                        ]
+                    (i, v)
+                    for i, v in enumerate(raw_ln.data, start=1)
+                    if v in clean_ln.data
+                ]
                 return index_lines
         except OSError as e:
             raise StandardParserError(f"file error -> OSError: {e}")
 
-    def parse_nb_drones(self, clean_indexed_lns: list[tuple]) -> int:
+    def parse_nb_drones(
+        self,
+        clean_indexed_lns: list[tuple[int, str]],
+    ) -> int:
+        """Validate and parse the number of drones.
+
+        Args:
+            clean_indexed_lns: Cleaned map lines with line numbers.
+
+        Returns:
+            The parsed number of drones.
+
+        Raises:
+            CustomParserError: If the drone definition is invalid.
+            StandardParserError: If the drone count is not an integer.
         """
-        validate nb drones
-        """
-        if ':' not in clean_indexed_lns[0][1]:
+        if ":" not in clean_indexed_lns[0][1]:
             raise CustomParserError(
                 f"Line: {clean_indexed_lns[0][0]}\n"
                 f"Error: missing ':' in nb_drones definition\n"
@@ -109,7 +138,7 @@ class Parser:
                 f"Fix:   'nb_drones: 3'"
             )
         try:
-            name, nb = clean_indexed_lns[0][1].split(':')
+            name, nb_str = clean_indexed_lns[0][1].split(":")
             name = name.strip()
             if name != "nb_drones":
                 raise CustomParserError(
@@ -121,7 +150,7 @@ class Parser:
                     f"       no other keyword is allowed on line 1\n"
                     f"Fix:   'nb_drones: 5'"
                 )
-            nb = int(nb)
+            nb = int(nb_str)
             if nb < 1:
                 raise CustomParserError(
                     f"Line: {clean_indexed_lns[0][0]}\n"
@@ -142,17 +171,40 @@ class Parser:
             )
         return nb
 
-    def parse_hub(self, nb_line: int,
-                  line: str, nb_drones: int | None) -> Zone:
-        """
-        parse each hub
+    def parse_hub(
+        self,
+        nb_line: int,
+        line: str,
+        nb_drones: int | None,
+    ) -> Zone:
+        """Parse and validate a hub definition.
+
+        Args:
+            nb_line: Original line number.
+            line: Hub definition line.
+            nb_drones: Drone count used for capacity validation.
+
+        Returns:
+            The parsed zone.
+
+        Raises:
+            CustomParserError: If the hub data is invalid.
+            StandardParserError: If the hub format is invalid.
         """
         try:
-            key, data = line.split(':')
+            _, data = line.split(":")
             parts = data.split(maxsplit=3)
             name, x, y = parts[:3]
             X = int(x)
             Y = int(y)
+            if not (
+                -16_777_216 <= X <= 16_777_216
+                and -16_777_216 <= Y <= 16_777_216
+            ):
+                raise CustomParserError(
+                    f"Line: {nb_line}\n"
+                    "Error: Coordinates are too large"
+                )
             if "-" in name:
                 raise CustomParserError(
                     f"Line: {nb_line}\n"
@@ -166,7 +218,11 @@ class Parser:
                 )
             metadata = parts[3] if len(parts) == 4 else ""
             zone_type, color, max_drones = self.parse_meta_zone(
-                        metadata, nb_line, line, nb_drones)
+                metadata,
+                nb_line,
+                line,
+                nb_drones,
+            )
         except ValueError:
             raise StandardParserError(
                 f"Line: {nb_line}\n"
@@ -192,17 +248,34 @@ class Parser:
         self.duplicate_list.append((name, X, Y))
         return Zone(name, X, Y, zone_type, color, max_drones)
 
-    def parse_meta_zone(self, metadata: str, nb_line: int,
-                        line: str, nb_drones: int | None) -> tuple:
-        """
-        parse metadata of each zone
+    def parse_meta_zone(
+        self,
+        metadata: str,
+        nb_line: int,
+        line: str,
+        nb_drones: int | None,
+    ) -> tuple[str, str, int]:
+        """Parse and validate zone metadata.
+
+        Args:
+            metadata: Zone metadata string.
+            nb_line: Original line number.
+            line: Original hub definition.
+            nb_drones: Drone count used for capacity validation.
+
+        Returns:
+            The zone type, color, and maximum drone capacity.
+
+        Raises:
+            CustomParserError: If the metadata is invalid.
+            StandardParserError: If a metadata tag is malformed.
         """
         zone_type = "normal"
         color = "none"
         max_drones = 1
         if metadata == "":
             return zone_type, color, max_drones
-        if not metadata.startswith('[') or not metadata.endswith(']'):
+        if not metadata.startswith("[") or not metadata.endswith("]"):
             raise CustomParserError(
                 f"Line: {nb_line}\n"
                 f"Error: metadata must be wrapped in '[' and ']'\n"
@@ -232,8 +305,12 @@ class Parser:
                 elif data.startswith("color="):
                     color = self.color_meta(nb_line, line, val)
                 elif data.startswith("max_drones="):
-                    max_drones = self.max_drones_meta(nb_line, line,
-                                                      val, nb_drones)
+                    max_drones = self.max_drones_meta(
+                        nb_line,
+                        line,
+                        val,
+                        nb_drones,
+                    )
                 else:
                     raise CustomParserError(
                         f"Line: {nb_line}\n"
@@ -267,8 +344,18 @@ class Parser:
         return zone_type, color, max_drones
 
     def zone_type_meta(self, nb_line: int, line: str, val: str) -> str:
-        """
-        validate zone_type metadata
+        """Validate zone type metadata.
+
+        Args:
+            nb_line: Original line number.
+            line: Original hub definition.
+            val: Zone type value.
+
+        Returns:
+            The validated zone type.
+
+        Raises:
+            CustomParserError: If the zone type is unknown.
         """
         valid = ["normal", "blocked", "restricted", "priority"]
         if val not in valid:
@@ -289,8 +376,18 @@ class Parser:
         return val
 
     def color_meta(self, nb_line: int, line: str, val: str) -> str:
-        """
-        validate color metadata
+        """Validate color metadata.
+
+        Args:
+            nb_line: Original line number.
+            line: Original hub definition.
+            val: Color value.
+
+        Returns:
+            The validated color value.
+
+        Raises:
+            CustomParserError: If the color value is invalid.
         """
         if val == "":
             raise CustomParserError(
@@ -315,10 +412,27 @@ class Parser:
         self.dup_meta.append("color=")
         return val
 
-    def max_drones_meta(self, nb_line: int, line: str,
-                        val: str, nb_drones: int | None) -> int:
-        """
-        validate max_drones metadata
+    def max_drones_meta(
+        self,
+        nb_line: int,
+        line: str,
+        val: str,
+        nb_drones: int | None,
+    ) -> int:
+        """Validate maximum drone capacity metadata.
+
+        Args:
+            nb_line: Original line number.
+            line: Original hub definition.
+            val: Maximum drone capacity value.
+            nb_drones: Total drone count used for validation.
+
+        Returns:
+            The validated maximum drone capacity.
+
+        Raises:
+            CustomParserError: If the capacity is invalid.
+            ValueError: If the capacity value is not an integer.
         """
         value = int(val)
         if value < 1:
@@ -332,7 +446,7 @@ class Parser:
                 f"       the default is 1 if this tag is not specified\n"
                 f"Fix:   'max_drones=2'"
             )
-        if nb_drones is not None and value < nb_drones:
+        if nb_drones is not None and value > nb_drones:
             raise CustomParserError(
                 f"Line: {nb_line}\n"
                 f"Error: max_drones cannot exceed total nb_drones\n"
@@ -345,18 +459,33 @@ class Parser:
         return value
 
     def parse_connection(self, nb_line: int, line: str) -> Connection:
-        """
-        parse connection
+        """Parse and validate a connection definition.
+
+        Args:
+            nb_line: Original line number.
+            line: Connection definition line.
+
+        Returns:
+            The parsed connection.
+
+        Raises:
+            CustomParserError: If the connection is invalid.
+            StandardParserError: If the connection format is invalid.
         """
         try:
-            _, name = line.split(':')
+            _, name = line.split(":")
             name = name.strip()
-            name1, name2_metadata = name.split('-')
-            track_meta_conection = any(c.isspace() for c in name2_metadata)
+            name1, name2_metadata = name.split("-")
+            track_meta_conection = any(
+                c.isspace() for c in name2_metadata
+            )
             if track_meta_conection:
                 name2, meta_connection = name2_metadata.split(maxsplit=1)
                 max_link_capacity = self.max_link_capacity_meta(
-                    meta_connection, nb_line, line)
+                    meta_connection,
+                    nb_line,
+                    line,
+                )
             else:
                 max_link_capacity = 1
                 name2 = name2_metadata
@@ -380,17 +509,19 @@ class Parser:
                     f"       names so any space breaks the parsing\n"
                     f"Fix:   use the exact zone name as it was defined"
                 )
-            if (name1 == name2):
+            if name1 == name2:
                 raise CustomParserError(
-                        f"Line: {nb_line}\n"
-                        f"Error: duplicate zone name in '{name}' "
-                        f"here is it '{name1}' and '{name2}'\n"
-                        f"the same name in the same connection zone"
-                        f" it should not be"
-                        )
-            if (name1 not in self.hubs
-                    and name1 not in self.start_hub
-                    and name1 not in self.end_hub):
+                    f"Line: {nb_line}\n"
+                    f"Error: duplicate zone name in '{name}' "
+                    f"here is it '{name1}' and '{name2}'\n"
+                    f"the same name in the same connection zone"
+                    f" it should not be"
+                )
+            if (
+                name1 not in self.hubs
+                and name1 not in self.start_hub
+                and name1 not in self.end_hub
+            ):
                 raise CustomParserError(
                     f"Line: {nb_line}\n"
                     f"Error: zone '{name1}' was never defined\n"
@@ -401,9 +532,11 @@ class Parser:
                     f"Fix:   define '{name1}' using 'hub:', 'start_hub:',\n"
                     f"       or 'end_hub:' before this connection line"
                 )
-            if (name2 not in self.hubs
-                    and name2 not in self.start_hub
-                    and name2 not in self.end_hub):
+            if (
+                name2 not in self.hubs
+                and name2 not in self.start_hub
+                and name2 not in self.end_hub
+            ):
                 raise CustomParserError(
                     f"Line: {nb_line}\n"
                     f"Error: zone '{name2}' was never defined\n"
@@ -415,12 +548,15 @@ class Parser:
                     f"       or 'end_hub:' before this connection line"
                 )
             if (name1, name2) in self.connection_dup:
-                raise CustomParserError(f"Line: {nb_line}\n"
-                                        f"Error: '{name}' duplicate line name "
-                                        f"in '{name1}' and '{name2}'\n"
-                                        f"check other zone connection who have"
-                                        f" the same names")
+                raise CustomParserError(
+                    f"Line: {nb_line}\n"
+                    f"Error: '{name}' duplicate line name "
+                    f"in '{name1}' and '{name2}'\n"
+                    f"check other zone connection who have"
+                    f" the same names"
+                )
             self.connection_dup.append((name1, name2))
+            self.connection_dup.append((name2, name1))
         except ValueError:
             raise StandardParserError(
                 f"Line: {nb_line}\n"
@@ -430,17 +566,38 @@ class Parser:
                 f"       separated by a single '-' after 'connection:',\n"
                 f"       both names must be defined zones\n"
                 f"Fix:   'connection: zone1-zone2' or\n"
-                f"       'connection: zone1-zone2 [max_link_capacity=2]'"
+                f"       'connection: zone1-zone2 "
+                "[max_link_capacity=2]'"
             )
-        return Connection(self.hubs[name1], self.hubs[name2], max_link_capacity)
+        return Connection(
+            self.hubs[name1],
+            self.hubs[name2],
+            max_link_capacity,
+        )
 
-    def max_link_capacity_meta(self, meta_connection: str,
-                               nb_line: int, line: str) -> int:
+    def max_link_capacity_meta(
+        self,
+        meta_connection: str,
+        nb_line: int,
+        line: str,
+    ) -> int:
+        """Validate connection capacity metadata.
+
+        Args:
+            meta_connection: Connection metadata string.
+            nb_line: Original line number.
+            line: Original connection definition.
+
+        Returns:
+            The validated maximum link capacity.
+
+        Raises:
+            CustomParserError: If the capacity metadata is invalid.
+            StandardParserError: If the capacity value is not an integer.
         """
-        check metadata of connection
-        """
-        if (not meta_connection.startswith('[')
-                or not meta_connection.endswith(']')):
+        if not meta_connection.startswith("[") or not meta_connection.endswith(
+            "]"
+        ):
             raise CustomParserError(
                 f"Line: {nb_line}\n"
                 f"Error: connection metadata must be wrapped in '[' and ']'\n"
@@ -474,7 +631,7 @@ class Parser:
                 f"Fix:   '[max_link_capacity=2]'"
             )
         try:
-            _, val = meta_connection.split('=')
+            _, val = meta_connection.split("=")
             value = int(val)
             if value < 1:
                 raise CustomParserError(
@@ -498,12 +655,27 @@ class Parser:
             )
         return value
 
-    def check_count_start_end_hub(self, start_hub_count: int,
-                                  end_hub_count: int, nb_line: int,
-                                  line: str) -> None:
-        """
-        check how many start hub i have and how many end hub
-        i have and raise error depending on that
+    def check_count_start_end_hub(
+        self,
+        start_hub_count: int,
+        end_hub_count: int,
+        nb_line: int,
+        line: str,
+    ) -> None:
+        """Validate the number of start and end hubs.
+
+        Args:
+            start_hub_count: Number of parsed start hubs.
+            end_hub_count: Number of parsed end hubs.
+            nb_line: Original line number.
+            line: Current map line.
+
+        Returns:
+            None.
+
+        Raises:
+            CustomParserError: If the map does not contain exactly one
+                start hub and one end hub.
         """
         if start_hub_count == 0:
             raise CustomParserError(
@@ -544,9 +716,21 @@ class Parser:
                 f"Fix:   remove this duplicate or convert it to 'hub:'"
             )
 
-    def validate_extract_data(self, clean_indexed_lns: list[tuple]) -> None:
-        """
-        dispatcher of zones only
+    def validate_extract_data(
+        self,
+        clean_indexed_lns: list[tuple[int, str]],
+    ) -> None:
+        """Validate and extract zones and connections from map data.
+
+        Args:
+            clean_indexed_lns: Cleaned map lines with line numbers.
+
+        Returns:
+            None.
+
+        Raises:
+            CustomParserError: If any map definition is invalid.
+            StandardParserError: If a parsed value has invalid format.
         """
         self.nb_drones = self.parse_nb_drones(clean_indexed_lns)
         start_hub_count = 0
@@ -574,23 +758,38 @@ class Parser:
                 )
 
             elif line.startswith("start_hub:"):
-                zone = self.parse_hub(index, line, self.nb_drones)
+                zone = self.parse_hub(index, line, None)
+                if zone.zone_type == "blocked":
+                    zone.zone_type = "normal"
                 self.hubs[zone.name] = zone
                 self.start_hub[zone.name] = zone
                 start_hub_count += 1
                 self.check_count_start_end_hub(
-                    start_hub_count, 1, index, line)
+                    start_hub_count,
+                    1,
+                    index,
+                    line,
+                )
 
             elif line.startswith("end_hub:"):
-                zone = self.parse_hub(index, line, self.nb_drones)
+                zone = self.parse_hub(index, line, None)
+                if zone.zone_type == "blocked":
+                    raise CustomParserError(
+                        f"Line: {index}\n"
+                        f"Error: start hub '{zone.name}' cannot be blocked"
+                    )
                 self.hubs[zone.name] = zone
                 self.end_hub[zone.name] = zone
                 end_hub_count += 1
                 self.check_count_start_end_hub(
-                    1, end_hub_count, index, line)
+                    1,
+                    end_hub_count,
+                    index,
+                    line,
+                )
 
             elif line.startswith("hub:"):
-                zone = self.parse_hub(index, line, None)
+                zone = self.parse_hub(index, line, self.nb_drones)
                 self.hubs[zone.name] = zone
             elif line.startswith("connection:"):
                 connection = self.parse_connection(index, line)
@@ -609,12 +808,40 @@ class Parser:
                     f"       'hub:'        — a regular zone\n"
                     f"       'connection:' — a link between two zones"
                 )
-        self.check_count_start_end_hub(start_hub_count,
-                                       end_hub_count, index, line)
+        self.check_count_start_end_hub(
+            start_hub_count,
+            end_hub_count,
+            index,
+            line,
+        )
+
+        start_name = next(iter(self.start_hub))
+        end_name = next(iter(self.end_hub))
+
+        connected_zones = {
+            zone
+            for connection in self.connections
+            for zone in (
+                connection.zone_a.name,
+                connection.zone_b.name,
+            )
+        }
+
+        if start_name not in connected_zones:
+            raise CustomParserError(
+                f"Error: start hub '{start_name}' has no connection"
+            )
+
+        if end_name not in connected_zones:
+            raise CustomParserError(
+                f"Error: end hub '{end_name}' has no connection"
+            )
 
     def dispatcher(self) -> None:
-        """
-        the main dispatcher
+        """Load, validate, and extract the map data.
+
+        Returns:
+            None.
         """
         clean_indexed_lns = self.load_raw_input()
         self.validate_extract_data(clean_indexed_lns)

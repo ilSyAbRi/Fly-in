@@ -1,77 +1,221 @@
-# Fly-In: Drone Simulation Challenge Maps
+# Fly-in
 
-This collection contains carefully crafted maps designed to test different aspects of drone pathfinding algorithms, from basic navigation to complex optimization challenges.
+## Description
 
-## Map Categories
+**Fly-in** is a turn-based drone pathfinding simulation written in Python.
 
-### 🟢 Easy Maps
-**Target**: Beginners, basic algorithm testing
-- `01_linear_path.txt` - Simple linear progression (2 drones)
-- `02_simple_fork.txt` - Basic path splitting (4 drones)  
-- `03_basic_capacity.txt` - Introduction to capacity constraints (4 drones)
+The program reads a map describing drones, zones, zone types, capacities, and
+connections. It builds a graph from that map, computes valid routes from the
+start hub to the end hub, and simulates drone movement turn by turn while
+respecting zone and connection capacities.
 
-### 🟡 Medium Maps
-**Target**: Intermediate challenges, algorithm optimization
-- `01_dead_end_trap.txt` - Dead ends that can trap naive algorithms (5 drones)
-- `02_circular_loop.txt` - Circular paths with restricted zones (6 drones)
-- `03_priority_puzzle.txt` - Optimal path selection with priority zones (5 drones)
+The project also includes an Arcade-based visualizer to display the graph and
+drone movements.
 
-### 🔴 Hard Maps
-**Target**: Advanced algorithms, stress testing
-- `01_maze_nightmare.txt` - Complex maze with multiple traps and loops (8 drones)
-- `02_capacity_hell.txt` - Extreme capacity constraints requiring careful timing (12 drones)
-- `03_ultimate_challenge.txt` - **THE ULTIMATE TEST** - All challenges combined (15 drones)
+## Instructions
 
-### ⚫ Challenger Maps
-**Target**: Research and algorithmic limits exploration
-- `01_the_impossible_dream.txt` - **THE IMPOSSIBLE DREAM** - Quasi-unsolvable challenge (25 drones)
+### Requirements
 
-> ⚠️ **WARNING**: Challenger maps are designed to push algorithmic limits and may not be solvable by most implementations. They are intended for research, stress testing, and algorithmic exploration rather than validation. The goal is to challenge the boundaries of what's possible, not to pass evaluation criteria.
+- Python 3.10+
+- `uv`
 
-> 🏆 **CHALLENGE RECORD**: The reference implementation solves "The Impossible Dream" in **45 turns**. Can you beat this record? This serves as a benchmark for algorithmic optimization and provides a concrete goal for advanced implementations.
+### Install dependencies
 
-## Challenge Types Covered
+```bash
+make install
+```
 
-### 🎯 **Dead End Traps**
-Maps contain paths that lead nowhere, testing if algorithms can backtrack or avoid getting stuck.
+Or directly:
 
-### 🔄 **Circular Loops** 
-Cycles in the graph that can cause infinite loops in poorly designed algorithms.
+```bash
+uv sync
+```
 
-### ⚡ **Capacity Constraints**
-- Zone capacity limits (max_drones)
-- Connection capacity limits (max_link_capacity)
-- Timing-based bottlenecks
+### Run the project
 
-### 🚀 **Zone Type Optimization**
-- `normal`: Standard 1-turn movement
-- `restricted`: 2-turn movement (slow but sometimes necessary)
-- `priority`: 1-turn movement but should be preferred
-- `blocked`: Completely inaccessible
+Using the Makefile:
 
-### 🧩 **Complex Topology**
-- Multiple valid paths with different costs
-- Convergence points requiring coordination
-- Multi-layer challenges
+```bash
+make run MAP=maps/easy/01_linear_path.txt
+```
 
-## Testing Strategy
+Or directly:
 
-1. **Start with Easy**: Ensure basic functionality works
-2. **Progress to Medium**: Test algorithm robustness
-3. **Challenge with Hard**: Stress test optimization and edge cases
-4. **Ultimate Test**: `03_ultimate_challenge.txt` combines all difficulties
+```bash
+uv run python main.py maps/easy/01_linear_path.txt
+```
 
-## Expected Behavior
+If no map path is provided, the program uses the default map.
 
-All maps are designed to be solvable with a well-implemented algorithm. However:
+### Visualizer controls
 
-- **Easy maps**: Should solve quickly with any reasonable approach
-- **Medium maps**: May require backtracking, path optimization, or capacity management
-- **Hard maps**: Demand sophisticated algorithms with proper conflict resolution and optimization
+- `W` / `Up Arrow` — move camera up
+- `S` / `Down Arrow` — move camera down
+- `A` / `Left Arrow` — move camera left
+- `D` / `Right Arrow` — move camera right
+- `Space` — advance the simulation by one turn
+- Hold `Space` — continuously advance through turns
 
-## Performance Benchmarks
+## Algorithm explanation
 
-- **Easy**: < 10 simulation turns typically
-- **Medium**: 10-30 simulation turns depending on optimization
-- **Hard**: 30+ simulation turns, focus on finding valid solutions
-- **Challenger**: **Record to beat: 45 turns** for "The Impossible Dream" - designed for algorithmic research
+Fly-in uses a graph-based pathfinding system.
+
+Each zone is represented as a node and each connection between two zones is
+represented as an edge.
+
+Zone traversal costs are:
+
+- **normal** — 1 turn
+- **priority** — 1 turn
+- **restricted** — 2 turns
+- **blocked** — cannot be entered
+
+### Heuristic calculation
+
+Before searching for drone paths, the program calculates the minimum known
+distance from each reachable zone to the end hub.
+
+This is done using a Dijkstra-style search starting from the end hub.
+
+The calculated distances are used as the heuristic for the main pathfinding
+search.
+
+The heuristic calculation also allows the program to detect disconnected parts
+of the graph.
+
+### Pathfinding
+
+The main pathfinding algorithm uses an A*-style priority queue.
+
+For each possible movement, the algorithm considers the current turn, movement
+cost, and estimated remaining distance to the end.
+
+Conceptually:
+
+```text
+f = arrival turn + estimated distance to the end
+```
+
+A search state contains both the zone and the turn:
+
+```text
+(zone, turn)
+```
+
+The turn is part of the state because a zone can be available during one turn
+but full during another.
+
+The pathfinder also considers:
+
+- zone capacity (`max_drones`)
+- connection capacity (`max_link_capacity`)
+- waiting in the current zone
+- restricted zones that require two turns to enter
+- priority zones as a tie-breaker
+
+Drones are planned sequentially.
+
+After the path of one drone is calculated, the zones and connections used by
+that drone are recorded. The next drone is then planned while respecting those
+reservations.
+
+This prevents drones from exceeding zone or connection capacity during the same
+turn.
+
+## Visual representation
+
+Fly-in includes a graphical visualization built using Arcade.
+
+The visualizer displays:
+
+- zones as circles
+- zone names above their circles
+- connections as lines between zones
+- drones as smaller circles
+- the current simulation turn
+- camera movement for navigating larger maps
+
+Zone types are represented using labels:
+
+```text
+N = Normal
+R = Restricted
+P = Priority
+```
+
+The visualization makes it easier to understand how drones move through the
+graph over time.
+
+It also helps show:
+
+- drones waiting for available capacity
+- movement through restricted zones
+- different paths through the graph
+- multiple drones moving at the same time
+- the structure of larger maps
+
+The camera can be moved with the keyboard so maps that extend beyond the
+initial screen can still be explored.
+
+## Example input
+
+```text
+nb_drones: 2
+start_hub: Start 0 0
+hub: A 1 0
+end_hub: End 2 0
+
+connection: Start-A
+connection: A-End
+```
+
+This map contains two drones traveling from `Start` to `End` through zone `A`.
+
+## Expected output
+
+```text
+D1-A
+D1-End D2-A
+D2-End
+```
+
+Each output line represents one simulation turn.
+
+A normal drone movement is displayed as:
+
+```text
+DRONE-ZONE
+```
+
+For movement through a restricted connection, the output can contain both sides
+of the connection:
+
+```text
+DRONE-FROM-TO
+```
+
+## Project structure
+
+```text
+.
+├── main.py
+├── parser.py
+├── models.py
+├── graph.py
+├── pathfinding.py
+├── engine.py
+├── display.py
+├── maps/
+├── Makefile
+└── README.md
+```
+
+### Files
+
+- `main.py` — starts the program and connects all components
+- `parser.py` — reads and validates map files
+- `models.py` — defines zones, connections, and drones
+- `graph.py` — builds the graph representation
+- `pathfinding.py` — calculates and schedules drone paths
+- `engine.py` — executes simulation turns and produces output
+- `display.py` — provides the Arcade graphical visualization
