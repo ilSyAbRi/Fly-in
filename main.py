@@ -1,3 +1,5 @@
+"""Run the Fly-in drone simulation."""
+
 import sys
 
 import arcade
@@ -25,6 +27,10 @@ def main() -> None:
     Returns:
         None.
     """
+    capacity_info = "--capacity-info" in sys.argv
+
+    if capacity_info:
+        sys.argv.remove("--capacity-info")
     file_path = sys.argv[1] if len(sys.argv) > 1 else DEFAULT_PATH
 
     parse = Parser(file_path)
