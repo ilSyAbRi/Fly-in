@@ -48,6 +48,7 @@ class Display(arcade.Window):
         self.space_pressed = False
         self.space_timer: float = 0
         self.background_color = (35, 35, 40)
+        self.TEXT_COLOR = (245, 220, 150)
 
     def _draw_zone(self) -> None:
         """Draw all zones in the graph.
@@ -282,10 +283,10 @@ class Display(arcade.Window):
             arcade.color.PINK,
             20,)
         arcade.draw_text(
-            "do alt + f4 to quit",
-            camera_x + self.width / 2 - 180,
+            "Alt + F4 to quit",
+            camera_x + self.width / 2 - 150,
             camera_y + self.height / 2 - 40,
-            arcade.color.YELLOW,
-            14,
+            self.TEXT_COLOR,
+            13,
 
         )
