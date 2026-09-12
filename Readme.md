@@ -3,7 +3,13 @@
 
 > [!IMPORTANT]
 > **Press `Alt + 4` to exit the graphical interface.**
+
 > do : `make` or `make help` for info 
+
+## 📄 Project Subject
+
+[Read the project subject](en.subject.pdf)
+
 
 ## Description
 
