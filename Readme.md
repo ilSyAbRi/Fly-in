@@ -1,4 +1,85 @@
 
+# Fly-in
+
+> [!IMPORTANT]
+> **Press `Alt + 4` to exit the graphical interface.**
+> do : `make` or `make help` for info 
+
+## Description
+
+**Fly-in** is a turn-based drone pathfinding simulation written in Python.
+
+The program reads a map describing drones, zones, zone types, capacities, and connections. It builds a graph from that map, computes valid routes from the start hub to the end hub, and simulates drone movement turn by turn while respecting zone and connection capacities.
+
+The project also includes an Arcade-based visualizer to display the graph and drone movements.
+
+## Instructions
+
+### Requirements
+
+- Python 3.10+
+- Make
+
+### Install dependencies
+
+```bash
+make install
+```
+
+### Run the project
+
+Using the Makefile:
+
+```bash
+make run MAP=maps/easy/01_linear_path.txt
+```
+
+Or directly:
+
+```bash
+python3 main.py maps/easy/01_linear_path.txt
+```
+
+If no map path is provided, the program uses the default map.
+
+### Visualizer controls
+
+- `W` / `Up Arrow` — move camera up
+- `S` / `Down Arrow` — move camera down
+- `A` / `Left Arrow` — move camera left
+- `D` / `Right Arrow` — move camera right
+- `Space` — advance the simulation by one turn
+- Hold `Space` — continuously advance through turns
+
+## Algorithm explanation
+
+Fly-in uses a graph-based pathfinding system.
+
+Each zone is represented as a node and each connection between two zones is represented as an edge.
+
+Zone traversal costs are:
+
+- **normal** — 1 turn
+- **priority** — 1 turn
+- **restricted** — 2 turns
+- **blocked** — cannot be entered
+
+### Heuristic calculation
+
+Before searching for drone paths, the program calculates the minimum known distance from each reachable zone to the end hub.
+
+This is done using a Dijkstra-style search starting from the end hub.
+
+The calculated distances are used as the heuristic for the main pathfinding search.
+
+The heuristic calculation also allows the program to detect disconnected parts of the graph.
+
+### Pathfinding
+
+The main pathfinding algorithm uses an A*-style priority queue.
+
+For each possible movement, the algorithm considers the current turn, movement cost, and estimated remaining distance to the end.
+
 Conceptually:
 
 ```text
@@ -11,8 +92,7 @@ A search state contains both the zone and the turn:
 (zone, turn)
 ```
 
-The turn is part of the state because a zone can be available during one turn
-but full during another.
+The turn is part of the state because a zone can be available during one turn but full during another.
 
 The pathfinder also considers:
 
@@ -24,12 +104,9 @@ The pathfinder also considers:
 
 Drones are planned sequentially.
 
-After the path of one drone is calculated, the zones and connections used by
-that drone are recorded. The next drone is then planned while respecting those
-reservations.
+After the path of one drone is calculated, the zones and connections used by that drone are recorded. The next drone is then planned while respecting those reservations.
 
-This prevents drones from exceeding zone or connection capacity during the same
-turn.
+This prevents drones from exceeding zone or connection capacity during the same turn.
 
 ## Visual representation
 
@@ -52,8 +129,7 @@ R = Restricted
 P = Priority
 ```
 
-The visualization makes it easier to understand how drones move through the
-graph over time.
+The visualization makes it easier to understand how drones move through the graph over time.
 
 It also helps show:
 
@@ -63,8 +139,7 @@ It also helps show:
 - multiple drones moving at the same time
 - the structure of larger maps
 
-The camera can be moved with the keyboard so maps that extend beyond the
-initial screen can still be explored.
+The camera can be moved with the keyboard so maps that extend beyond the initial screen can still be explored.
 
 ## Example input
 
@@ -96,8 +171,7 @@ A normal drone movement is displayed as:
 DRONE-ZONE
 ```
 
-For movement through a restricted connection, the output can contain both sides
-of the connection:
+For movement through a restricted connection, the output can contain both sides of the connection:
 
 ```text
 DRONE-FROM-TO
@@ -126,8 +200,19 @@ DRONE-FROM-TO
 - `models.py` — defines zones, connections, and drones
 - `graph.py` — builds the graph representation
 - `pathfinding.py` — calculates and schedules drone paths
+- `engine.py` — executes simulation turns and produces output
 - `display.py` — provides the Arcade graphical visualization
 
----
-> run alt + f4 to quit arcade graphic visualization
----
+## 🎮 Controls
+
+| Key | Action |
+|-----|--------|
+| `W` / `↑` | Move camera up |
+| `S` / `↓` | Move camera down |
+| `A` / `←` | Move camera left |
+| `D` / `→` | Move camera right |
+| `Space` | Advance the simulation by one turn |
+| `Alt + 4` | Exit the graphical interface |
+
+> [!IMPORTANT]
+> **Press `Alt + 4` to exit the graphical interface.**
