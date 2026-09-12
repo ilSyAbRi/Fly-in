@@ -2,14 +2,11 @@
 # Fly-in
 
 > [!IMPORTANT]
-> **Press `Alt + 4` to exit the graphical interface.**
-
+> **Press `Alt + 4` to exit the graphical interface.** <br>
 > do : `make` or `make help` for info 
 
-## 📄 Project Subject
-
+#### 📄 Project Subject
 [Read the project subject](en.subject.pdf)
-
 
 ## Description
 
