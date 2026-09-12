@@ -34,6 +34,14 @@ make install
 
 Using the Makefile:
 
+First do:
+
+```bash
+make
+```
+
+Then:
+
 ```bash
 make run MAP=maps/easy/01_linear_path.txt
 ```
