@@ -2,7 +2,6 @@
 # Fly-in
 
 > [!IMPORTANT]
-> **Press `Alt + f4` to exit the graphical interface.** <br>
 > **do : `make` or `make help` for info.**<br>
 > **all info inside `make` or `make help` are correct by 95%.**
 
@@ -226,7 +225,3 @@ DRONE-FROM-TO
 | `Space` | Advance the simulation by one turn |
 | `Alt + 4` | Exit the graphical interface |
 
-> [!IMPORTANT]
-> **Press `Alt + f4` to exit the graphical interface.** <br>
-> **do : `make` or `make help` for info.** <br>
-> **all info inside `make` or `make help` are correct by 95%.**
