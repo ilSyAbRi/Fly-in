@@ -280,5 +280,12 @@ class Display(arcade.Window):
             camera_x - self.width / 2 + 20,
             camera_y + self.height / 2 - 40,
             arcade.color.PINK,
-            20,
+            20,)
+        arcade.draw_text(
+            f"do alt + f4 to quit",
+            camera_x + self.width / 2 - 180,
+            camera_y + self.height / 2 - 40,
+            arcade.color.YELLOW,
+            14,
+
         )
