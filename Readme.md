@@ -4,7 +4,7 @@
 > [!IMPORTANT]
 > **Press `Alt + f4` to exit the graphical interface.** <br>
 > **do : `make` or `make help` for info.**<br>
-> **all info inside `make` or `make help` are correct by 90%.**
+> **all info inside `make` or `make help` are correct by 95%.**
 
 #### 📄 Project Subject
 [Read the project subject](en.subject.pdf)
@@ -221,4 +221,4 @@ DRONE-FROM-TO
 > [!IMPORTANT]
 > **Press `Alt + f4` to exit the graphical interface.** <br>
 > **do : `make` or `make help` for info.** <br>
-> **all info inside `make` or `make help` are correct by 90%.**
+> **all info inside `make` or `make help` are correct by 95%.**
