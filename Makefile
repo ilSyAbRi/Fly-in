@@ -178,7 +178,7 @@ help:
 	@echo "\n\n\n\n"
 
 	@echo "$(GREY)YO━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━YO━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━$(YELLOW)YO$(RESET)"
-	@echo "$(GREEN)TIP:$(RESET)\nStep 1: Always run $(YELLOW)make install.$(RESET)\nStep 2: activate the $(YELLOW)Virtual environment (venv).$(RESET)\nPress $(YELLOW)Alt + f4$(RESET) to exit the graphical interface.\n\n$(YELLOW)All info inside make or make help are correct by 95%.$(RESET)"
+	@echo "$(GREEN)TIP:$(RESET)\nStep 1: Always run $(YELLOW)make install.$(RESET)\nStep 2: activate the $(YELLOW)Virtual environment (venv).$(RESET)\n\n$(YELLOW)All info inside make or make help are correct by 95%.$(RESET)"
 	@echo "$(GREY)BY━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━BY━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━$(YELLOW)BY$(RESET)"
 
 run:
