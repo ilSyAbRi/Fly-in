@@ -2,7 +2,7 @@
 # Fly-in
 
 > [!IMPORTANT]
-> **Press `Alt + 4` to exit the graphical interface.** <br>
+> **Press `Alt + f4` to exit the graphical interface.** <br>
 > **do : `make` or `make help` for info.**<br>
 > **all info inside `make` or `make help` are correct by 90%.**
 
@@ -219,6 +219,6 @@ DRONE-FROM-TO
 | `Alt + 4` | Exit the graphical interface |
 
 > [!IMPORTANT]
-> **Press `Alt + 4` to exit the graphical interface.** <br>
+> **Press `Alt + f4` to exit the graphical interface.** <br>
 > **do : `make` or `make help` for info.** <br>
 > **all info inside `make` or `make help` are correct by 90%.**
