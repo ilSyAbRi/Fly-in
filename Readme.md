@@ -126,6 +126,8 @@ DRONE-FROM-TO
 - `models.py` — defines zones, connections, and drones
 - `graph.py` — builds the graph representation
 - `pathfinding.py` — calculates and schedules drone paths
-- `engine.py` — executes simulation turns and produces output
 - `display.py` — provides the Arcade graphical visualization
 
+---
+> run alt + f4 to quit arcade graphic visualization
+---
