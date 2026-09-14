@@ -223,5 +223,5 @@ DRONE-FROM-TO
 | `A` / `←` | Move camera left |
 | `D` / `→` | Move camera right |
 | `Space` | Advance the simulation by one turn |
-| `Alt + 4` | Exit the graphical interface |
+| `Alt + F4` | Exit the graphical interface |
 
